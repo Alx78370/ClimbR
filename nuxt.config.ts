@@ -13,5 +13,9 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-  modules: ["@nuxt/eslint"],
+  modules: ["@nuxt/eslint", "@formkit/nuxt"],
+  formkit: {
+    autoImport: true,
+    configFile: "./formkit.config.ts",
+  },
 });
