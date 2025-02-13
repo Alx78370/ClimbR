@@ -1,9 +1,12 @@
 <template>
     <div>
         <StructuresAppHeader />
-        <main class="h-screen">
-            <slot />
-        </main>
+        <div>
+            <main class="h-[90vh]">
+                <slot />
+            </main>
+        </div>
+
         <StructuresAppFooter />
     </div>
 </template>
