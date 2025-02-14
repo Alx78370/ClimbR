@@ -7,7 +7,7 @@ export default defineEventHandler(async (_event): Promise<Bloc[]> => {
       SELECT 
         b.id,
         b.salle_id,
-        TO_CHAR(b.date_success, 'DD/MM/YYYY') AS date_success,
+        b.statut,
         b.couleur,
         b.media,
         b.note,

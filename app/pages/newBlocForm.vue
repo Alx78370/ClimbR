@@ -7,7 +7,7 @@ const router = useRouter()
 
 // Champs du formulaire
 const salleId = ref<number | null>(null)
-const dateSuccess = ref('')
+const statut = ref<'en cours' | 'complété' | 'non complété'>('en cours')
 const couleur = ref('')
 const note = ref('')
 const mediaFile = ref<File | null>(null);
@@ -22,7 +22,7 @@ if (sallesData.value) {
 async function submitForm() {
     const formData = new FormData()
     formData.append('salle_id', salleId.value?.toString() || '')
-    formData.append('date_success', dateSuccess.value)
+    formData.append('statut', statut.value)
     formData.append('couleur', couleur.value)
     formData.append('note', note.value)
     if (mediaFile.value) {
@@ -54,16 +54,29 @@ function handleFileChange(event: Event) {
             <label>
                 Salle :
                 <select v-model="salleId" required>
-                    <option value="" disabled>Sélectionnez une salle</option>
-                    <option v-for="salle in salles" :key="salle.id" :value="salle.id">
+                    <option value="" class="text-white" disabled>Sélectionnez une salle</option>
+                    <option v-for="salle in salles" :key="salle.id" :value="salle.id" class="text-black">
                         {{ salle.name }}
                     </option>
                 </select>
             </label>
 
             <label>
-                Réussi le (date) :
-                <input type="date" v-model="dateSuccess" required />
+                Statut :
+                <div class="flex flex-col">
+                    <label>
+                        <input type="radio" value="en cours" v-model="statut" />
+                        En cours
+                    </label>
+                    <label>
+                        <input type="radio" value="complété" v-model="statut" />
+                        Complété
+                    </label>
+                    <label>
+                        <input type="radio" value="non complété" v-model="statut" />
+                        Non complété
+                    </label>
+                </div>
             </label>
 
             <label>

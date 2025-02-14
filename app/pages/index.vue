@@ -10,7 +10,7 @@ const { data: blocs } = await useFetch('/api/blocs');
                 <thead>
                     <tr>
                         <th class="border px-4 py-2">Nom de la salle</th>
-                        <th class="border px-4 py-2">Réussi le</th>
+                        <th class="border px-4 py-2">Statut</th>
                         <th class="border px-4 py-2">Difficulté</th>
                         <th class="border px-4 py-2">Media</th>
                         <th class="border px-4 py-2">Description</th>
@@ -19,7 +19,7 @@ const { data: blocs } = await useFetch('/api/blocs');
                 <tbody>
                     <tr v-for="bloc in blocs" :key="bloc.id">
                         <td class="border px-4 py-2">{{ bloc.salle_name }}</td>
-                        <td class="border px-4 py-2">{{ bloc.date_success }}</td>
+                        <td class="border px-4 py-2">{{ bloc.statut }}</td>
                         <td class="border px-4 py-2">{{ bloc.couleur }}</td>
                         <td class="border px-4 py-2">
                             <img :src="`/uploads/${bloc.media}`" :alt="`bloc ${bloc.couleur} à ${bloc.salle_name}`"

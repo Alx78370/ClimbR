@@ -2,7 +2,7 @@ export interface Bloc {
   id: number;
   salle_id: number;
   salle_name: string;
-  date_success: string;
+  statut: "en cours" | "complété" | "non complété";
   couleur: string;
   media?: string;
   note?: string;
