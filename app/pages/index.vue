@@ -1,5 +1,9 @@
 <script setup lang="ts">
-const { data: blocs } = await useFetch('/api/blocs');
+import { useBlocs } from '@/composables/useBlocs';
+
+const { blocs, fetchBlocs, deleteBloc } = useBlocs();
+
+onMounted(fetchBlocs);
 </script>
 
 <template>
@@ -14,6 +18,7 @@ const { data: blocs } = await useFetch('/api/blocs');
                         <th class="border px-4 py-2">Difficulté</th>
                         <th class="border px-4 py-2">Media</th>
                         <th class="border px-4 py-2">Description</th>
+                        <th class="border px-4 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,13 +28,17 @@ const { data: blocs } = await useFetch('/api/blocs');
                         <td class="border px-4 py-2">{{ bloc.couleur }}</td>
                         <td class="border px-4 py-2">
                             <img :src="`/uploads/${bloc.media}`" :alt="`bloc ${bloc.couleur} à ${bloc.salle_name}`"
-                                class="w-20 h-20 rounded object-cover" />
+                                class="w-20 h-20 rounded object-cover">
                         </td>
                         <td class="border px-4 py-2">{{ bloc.note }}</td>
+                        <td class="border px-4 py-2">
+                            <button class="bg-red-500 p-3 rounded-2xl w-fit"
+                                @click="deleteBloc(bloc.id)">Supprimer</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
-            <NuxtLink to="/newBlocForm" class="bg-blue-500 p-3 rounded-2xl w-fit">Nouveau bloc</NuxtLink>
+            <NuxtLink to="/newBloc" class="bg-blue-500 p-3 rounded-2xl w-fit">Nouveau bloc</NuxtLink>
         </div>
     </div>
 </template>
