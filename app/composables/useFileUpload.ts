@@ -6,7 +6,7 @@ export function useFileUpload() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("/api/upload", {
+      const response = await fetch("/api/uploads", {
         method: "POST",
         body: formData,
       });
