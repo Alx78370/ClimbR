@@ -8,6 +8,7 @@ export default defineEventHandler(async (_event): Promise<Bloc[]> => {
         b.id,
         b.salle_id,
         b.essai,
+        b.type,
         b.couleur,
         b.media,
         b.titre,

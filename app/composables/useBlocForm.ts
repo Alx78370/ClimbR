@@ -6,6 +6,15 @@ export function useBlocForm() {
   const router = useRouter();
   const salleId = ref<number | null>(null);
   const essai = ref<"Flash" | "2-5" | "6-9" | "10+">("Flash");
+  const type = ref<
+    | "dalle"
+    | "vertical"
+    | "leger_devers"
+    | "gros_devers"
+    | "toit"
+    | "diedre"
+    | "arete"
+  >("dalle");
   const couleur = ref("");
   const titre = ref("");
   const description = ref("");
@@ -21,6 +30,7 @@ export function useBlocForm() {
     const blocData = {
       salle_id: salleId.value,
       essai: essai.value,
+      type: type.value,
       couleur: couleur.value,
       titre: titre.value,
       description: description.value,
@@ -47,6 +57,7 @@ export function useBlocForm() {
   return {
     salleId,
     essai,
+    type,
     couleur,
     titre,
     description,

@@ -3,7 +3,7 @@ import { useSalles } from '@/composables/useSalles';
 import { useBlocForm } from '@/composables/useBlocForm';
 
 const { salles, fetchSalles } = useSalles();
-const { salleId, essai, couleur, titre, description, date_validation, mediaFile, submitBloc } = useBlocForm();
+const { salleId, essai, couleur, titre, type, description, date_validation, mediaFile, submitBloc } = useBlocForm();
 
 function handleFileChange(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -67,6 +67,19 @@ onMounted(fetchSalles);
             <label>
                 Description :
                 <textarea v-model="description" placeholder="Ajoutez une description" />
+            </label>
+
+            <label>
+                Type de bloc :
+                <select v-model="type" required>
+                    <option value="dalle">Dalle</option>
+                    <option value="vertical">Vertical</option>
+                    <option value="leger_devers">Léger dévers</option>
+                    <option value="gros_devers">Gros dévers</option>
+                    <option value="toit">Toit</option>
+                    <option value="diedre">Dièdre</option>
+                    <option value="arete">Arête</option>
+                </select>
             </label>
 
             <label>

@@ -3,6 +3,14 @@ export interface Bloc {
   salle_id: number;
   salle_name: string;
   essai: "Flash" | "2-5" | "6-9" | "10+";
+  type:
+    | "dalle"
+    | "vertical"
+    | "leger_devers"
+    | "gros_devers"
+    | "toit"
+    | "diedre"
+    | "arete";
   couleur: string;
   media?: string;
   titre: string;

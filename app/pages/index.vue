@@ -14,6 +14,16 @@ const colorClasses: { [key: string]: string } = {
     violet: 'text-purple-500',
 };
 
+const blocTypeMap = {
+    dalle: 'Dalle',
+    vertical: 'Vertical',
+    leger_devers: 'Léger Dévers',
+    gros_devers: 'Gros Dévers',
+    toit: 'Toit',
+    diedre: 'Dièdre',
+    arete: 'Arête',
+};
+
 onMounted(fetchBlocs);
 </script>
 
@@ -34,8 +44,12 @@ onMounted(fetchBlocs);
                             <div class="flex gap-10">
                                 <div class="flex flex-col items-start">
                                     <p class="text-sm text-gray-300">Difficulté</p>
-                                    <Icon name="icon-park-outline:dot" class="!block !m-0 !p-0 !leading-none text-3xl"
+                                    <Icon name="icon-park-outline:dot" class="text-3xl"
                                         :class="colorClasses[bloc.couleur]" />
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-300">Type de bloc</p>
+                                    <p>{{ blocTypeMap[bloc.type] }}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-300">Nb d'essais</p>
