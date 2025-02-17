@@ -4,7 +4,8 @@ export default defineEventHandler(async (event) => {
   const id = event.context.params?.id;
   const body = await readBody(event);
 
-  const { statut, couleur, description, media, date_validation, type } = body;
+  const { essai, couleur, description, media, date_validation, type, titre } =
+    body;
 
   if (!id) {
     throw createError({
@@ -17,11 +18,20 @@ export default defineEventHandler(async (event) => {
     const { rows } = await pool.query(
       `
       UPDATE bloc
-      SET essai = $1, couleur = $2, description = $3, media = $4, date_validation = $6 updated_at = NOW(), type = $7
-      WHERE id = $5
+      SET essai = $1, couleur = $2, description = $3, media = $4, date_validation = $5, type = $6, titre = $7, updated_at = NOW()
+      WHERE id = $8
       RETURNING *;
       `,
-      [statut, couleur, media, type, date_validation, description || null, id],
+      [
+        essai,
+        couleur,
+        description || null,
+        media || null,
+        date_validation,
+        type,
+        titre,
+        id,
+      ],
     );
 
     if (rows.length === 0) {

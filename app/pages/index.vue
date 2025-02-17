@@ -62,10 +62,10 @@ onMounted(fetchBlocs);
                             </div>
                         </div>
                         <div class="flex gap-5">
-                            <button>
+                            <NuxtLink :to="`/blocs/${bloc.id}`">
                                 <Icon name="fa6-solid:pen-to-square"
                                     class="text-white text-2xl hover:scale-110 hover:duration-300 hover:ease-in-out transition-all cursor-pointer" />
-                            </button>
+                            </NuxtLink>
                             <button @click="deleteBloc(bloc.id)">
                                 <Icon name="ion:trash"
                                     class="text-white text-2xl hover:scale-110 hover:duration-300 hover:ease-in-out transition-all cursor-pointer" />

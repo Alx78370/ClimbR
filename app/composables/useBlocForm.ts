@@ -2,10 +2,12 @@ import { useRouter } from "vue-router";
 import { useFileUpload } from "./useFileUpload";
 import type { Bloc } from "../../types/bloc";
 
-export function useBlocForm() {
+export function useBlocForm(existingBloc: Bloc | null = null) {
   const router = useRouter();
-  const salleId = ref<number | null>(null);
-  const essai = ref<"Flash" | "2-5" | "6-9" | "10+">("Flash");
+  const salleId = ref<number | null>(existingBloc?.salle_id || null);
+  const essai = ref<"Flash" | "2-5" | "6-9" | "10+">(
+    existingBloc?.essai || "Flash",
+  );
   const type = ref<
     | "dalle"
     | "vertical"
@@ -14,13 +16,17 @@ export function useBlocForm() {
     | "toit"
     | "diedre"
     | "arete"
-  >("dalle");
-  const couleur = ref("");
-  const titre = ref("");
-  const description = ref("");
-  const date_validation = ref("");
+  >(existingBloc?.type || "dalle");
+  const couleur = ref(existingBloc?.couleur || "");
+  const titre = ref(existingBloc?.titre || "");
+  const description = ref(existingBloc?.description || "");
+  const date_validation = ref(existingBloc?.date_validation || "");
   const mediaFile = ref<File | null>(null);
   const { mediaFileName, uploadFile } = useFileUpload();
+
+  if (existingBloc?.media) {
+    mediaFileName.value = existingBloc.media;
+  }
 
   async function submitBloc() {
     if (mediaFile.value && !mediaFileName.value) {
@@ -39,18 +45,24 @@ export function useBlocForm() {
     };
 
     try {
-      const response = await $fetch<Bloc>("/api/blocs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: blocData,
-      });
-
-      console.log("Bloc ajouté avec succès :", response);
+      if (existingBloc) {
+        await $fetch<Bloc>(`/api/blocs/${existingBloc.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: blocData,
+        });
+        console.log("Bloc mis à jour avec succès !");
+      } else {
+        await $fetch<Bloc>("/api/blocs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: blocData,
+        });
+        console.log("Bloc ajouté avec succès !");
+      }
       router.push("/");
     } catch (err) {
-      console.error("Erreur inattendue :", err);
+      console.error("Erreur :", err);
     }
   }
 
