@@ -12,7 +12,7 @@ export default defineEventHandler(async (_event): Promise<Bloc[]> => {
         b.media,
         b.titre,
         b.description,
-        TO_CHAR(b.date_validation, 'DD/MM/YYYY') AS date_validation,
+        lower(TO_CHAR(b.date_validation, 'FMDD TMMonth YYYY')) AS date_validation,
         TO_CHAR(b.created_at, 'DD/MM/YYYY') AS created_at,
         TO_CHAR(b.updated_at, 'DD/MM/YYYY') AS updated_at,
         s.name AS salle_name

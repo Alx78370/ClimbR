@@ -3,6 +3,17 @@ import { useBlocs } from '@/composables/useBlocs';
 
 const { blocs, fetchBlocs, deleteBloc } = useBlocs();
 
+const colorClasses: { [key: string]: string } = {
+    jaune: 'text-yellow-500',
+    orange: 'text-orange-500',
+    vert: 'text-green-500',
+    bleu: 'text-blue-500',
+    rose: 'text-pink-500',
+    rouge: 'text-red-500',
+    noir: 'text-black',
+    violet: 'text-purple-500',
+};
+
 onMounted(fetchBlocs);
 </script>
 
@@ -14,8 +25,28 @@ onMounted(fetchBlocs);
                 class="w-1/2 rounded object-cover">
             <div class="flex flex-col gap-5 w-1/2">
                 <div>
-                    <div class="flex justify-between items-center w-full">
-                        <p class="font-bold">{{ bloc.titre }}</p>
+                    <div class="flex justify-between items-start w-full">
+                        <div>
+                            <p class="font-bold">{{ bloc.titre }}</p>
+                            <p class="text-sm text-gray-300 mb-5">Validé le {{ bloc.date_validation }} - {{
+                                bloc.salle_name }}</p>
+                            <p class="mb-5"> {{ bloc.description }}</p>
+                            <div class="flex gap-10">
+                                <div class="flex flex-col items-start">
+                                    <p class="text-sm text-gray-300">Difficulté</p>
+                                    <Icon name="icon-park-outline:dot" class="!block !m-0 !p-0 !leading-none text-3xl"
+                                        :class="colorClasses[bloc.couleur]" />
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-300">Nb d'essais</p>
+                                    <div v-if="bloc.essai === 'Flash'" class="flex items-center gap-2">
+                                        <p>{{ bloc.essai }}</p>
+                                        <Icon name="typcn:flash" class="text-yellow-500" />
+                                    </div>
+                                    <p v-else>{{ bloc.essai }}</p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="flex gap-5">
                             <button>
                                 <Icon name="fa6-solid:pen-to-square"
@@ -27,12 +58,7 @@ onMounted(fetchBlocs);
                             </button>
                         </div>
                     </div>
-                    <p>Validé le {{ bloc.date_validation }}</p>
-                    <p>{{ bloc.essai }}</p>
-                    <p>bloc {{ bloc.couleur }}</p>
                 </div>
-                <h2> {{ bloc.salle_name }}</h2>
-                <p> {{ bloc.description }}</p>
             </div>
         </article>
     </div>
