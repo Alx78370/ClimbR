@@ -3,7 +3,7 @@ import { useSalles } from '@/composables/useSalles';
 import { useBlocForm } from '@/composables/useBlocForm';
 
 const { salles, fetchSalles } = useSalles();
-const { salleId, statut, couleur, note, mediaFile, submitBloc } = useBlocForm();
+const { salleId, essai, couleur, titre, description, date_validation, mediaFile, submitBloc } = useBlocForm();
 
 function handleFileChange(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -18,6 +18,11 @@ onMounted(fetchSalles);
         <h1 class="text-2xl mb-5">Ajouter un nouveau bloc</h1>
         <form class="flex flex-col gap-4 w-80" @submit.prevent="submitBloc">
             <label>
+                Date de validation :
+                <input v-model="date_validation" type="date" required>
+            </label>
+
+            <label>
                 Salle :
                 <select v-model="salleId" required>
                     <option value="" class="text-white" disabled>Sélectionnez une salle</option>
@@ -28,19 +33,23 @@ onMounted(fetchSalles);
             </label>
 
             <label>
-                Statut :
+                Nb d'essais :
                 <div class="flex flex-col">
                     <label>
-                        <input v-model="statut" type="radio" value="en cours">
-                        En cours
+                        <input v-model="essai" type="radio" value="Flash">
+                        Flash
                     </label>
                     <label>
-                        <input v-model="statut" type="radio" value="complété">
-                        Complété
+                        <input v-model="essai" type="radio" value="2-5">
+                        Entre 2 et 5
                     </label>
                     <label>
-                        <input v-model="statut" type="radio" value="non complété">
-                        Non complété
+                        <input v-model="essai" type="radio" value="6-9">
+                        Entre 6 et 9
+                    </label>
+                    <label>
+                        <input v-model="essai" type="radio" value="10+">
+                        10 et plus
                     </label>
                 </div>
             </label>
@@ -51,8 +60,13 @@ onMounted(fetchSalles);
             </label>
 
             <label>
+                Titre :
+                <input v-model="titre" type="text" placeholder="ex: Bloc rouge" required>
+            </label>
+
+            <label>
                 Description :
-                <textarea v-model="note" placeholder="Ajoutez une description" />
+                <textarea v-model="description" placeholder="Ajoutez une description" />
             </label>
 
             <label>

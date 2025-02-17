@@ -5,9 +5,11 @@ import type { Bloc } from "../../types/bloc";
 export function useBlocForm() {
   const router = useRouter();
   const salleId = ref<number | null>(null);
-  const statut = ref<"en cours" | "complété" | "non complété">("en cours");
+  const essai = ref<"Flash" | "2-5" | "6-9" | "10+">("Flash");
   const couleur = ref("");
-  const note = ref("");
+  const titre = ref("");
+  const description = ref("");
+  const date_validation = ref("");
   const mediaFile = ref<File | null>(null);
   const { mediaFileName, uploadFile } = useFileUpload();
 
@@ -18,10 +20,12 @@ export function useBlocForm() {
 
     const blocData = {
       salle_id: salleId.value,
-      statut: statut.value,
+      essai: essai.value,
       couleur: couleur.value,
-      note: note.value,
+      titre: titre.value,
+      description: description.value,
       media: mediaFileName.value,
+      date_validation: date_validation.value,
     };
 
     try {
@@ -42,9 +46,11 @@ export function useBlocForm() {
 
   return {
     salleId,
-    statut,
+    essai,
     couleur,
-    note,
+    titre,
+    description,
+    date_validation,
     mediaFile,
     submitBloc,
   };

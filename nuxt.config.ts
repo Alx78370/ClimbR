@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  modules: ["@nuxt/eslint", "@formkit/nuxt"],
+  modules: ["@nuxt/eslint", "@formkit/nuxt", "@nuxt/icon"],
   runtimeConfig: {
     dbHost: process.env.DB_HOST,
     dbPort: process.env.DB_PORT,

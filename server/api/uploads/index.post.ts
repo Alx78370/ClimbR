@@ -4,7 +4,6 @@ import { join } from "path";
 export default defineEventHandler(async (event) => {
   try {
     const formData = await readMultipartFormData(event);
-    console.log(formData);
     if (!formData) {
       return { success: false, error: "Aucun fichier reçu." };
     }

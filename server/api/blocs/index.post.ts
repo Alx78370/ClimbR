@@ -5,23 +5,32 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
 
-    const { salle_id, statut, couleur, note, media } = body;
-    if (!salle_id || !statut || !couleur) {
+    const { salle_id, essai, couleur, description, media, date_validation } =
+      body;
+    if (!salle_id || !essai || !couleur || !date_validation) {
       return {
         success: false,
-        error: "Les champs salle_id, statut et couleur sont obligatoires.",
+        error: "Les champs salle_id, essai et couleur sont obligatoires.",
       };
     }
 
     const { rows } = await pool.query(
       `
-      INSERT INTO bloc (salle_id, statut, couleur, media, note, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-      RETURNING id, salle_id, statut, couleur, media, note,
+      INSERT INTO bloc (salle_id, essai, couleur, media, description, date_validation, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+      RETURNING id, salle_id, essai, couleur, media, description,
+                TO_CHAR(date_validation, 'DD/MM/YYYY') AS date_validation,
                 TO_CHAR(created_at, 'DD/MM/YYYY') AS created_at,
                 TO_CHAR(updated_at, 'DD/MM/YYYY') AS updated_at;
       `,
-      [salle_id, statut, couleur, media || null, note || null],
+      [
+        salle_id,
+        essai,
+        couleur,
+        media,
+        date_validation || null,
+        description || null,
+      ],
     );
 
     return {
