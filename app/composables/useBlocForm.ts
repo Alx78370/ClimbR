@@ -1,14 +1,14 @@
 import { useRouter } from "vue-router";
 import { useFileUpload } from "./useFileUpload";
 import type { Bloc } from "../../types/bloc";
+import { ref, watch } from "vue";
 
-export function useBlocForm(existingBloc: Bloc | null = null) {
+export function useBlocForm(blocRef: Ref<Bloc | null>) {
   const router = useRouter();
-  const salleId = ref<number | null>(existingBloc?.salle_id || null);
-  const essai = ref<"Flash" | "2-5" | "6-9" | "10+">(
-    existingBloc?.essai || "Flash",
-  );
+  const salleId = ref<number | null>(null);
+  const essai = ref<"Flash" | "2-5" | "6-9" | "10+">("Flash");
   const type = ref<
+    | ""
     | "dalle"
     | "vertical"
     | "leger_devers"
@@ -16,21 +16,43 @@ export function useBlocForm(existingBloc: Bloc | null = null) {
     | "toit"
     | "diedre"
     | "arete"
-  >(existingBloc?.type || "dalle");
-  const couleur = ref(existingBloc?.couleur || "");
-  const titre = ref(existingBloc?.titre || "");
-  const description = ref(existingBloc?.description || "");
-  const date_validation = ref(existingBloc?.date_validation || "");
+  >("");
+  const couleur = ref("");
+  const titre = ref("");
+  const description = ref("");
+  const date_validation = ref("");
   const mediaFile = ref<File | null>(null);
+  const selectedFileName = ref<string>("");
   const { mediaFileName, uploadFile } = useFileUpload();
 
-  if (existingBloc?.media) {
-    mediaFileName.value = existingBloc.media;
-  }
+  watch(
+    blocRef,
+    (newBloc) => {
+      if (newBloc) {
+        salleId.value = newBloc.salle_id;
+        essai.value = newBloc.essai;
+        type.value = newBloc.type;
+        couleur.value = newBloc.couleur;
+        titre.value = newBloc.titre;
+        description.value = newBloc.description ?? "";
+        date_validation.value = (newBloc.date_validation?.split("T")[0] ??
+          "") as string;
+
+        if (newBloc.media) {
+          mediaFileName.value = newBloc.media;
+          selectedFileName.value = newBloc.media.split("/").pop() || "";
+        }
+      }
+    },
+    { immediate: true },
+  );
 
   async function submitBloc() {
-    if (mediaFile.value && !mediaFileName.value) {
-      await uploadFile(mediaFile.value);
+    if (mediaFile.value) {
+      const uploadedFileName = await uploadFile(mediaFile.value);
+      if (uploadedFileName) {
+        mediaFileName.value = uploadedFileName;
+      }
     }
 
     const blocData = {
@@ -45,8 +67,8 @@ export function useBlocForm(existingBloc: Bloc | null = null) {
     };
 
     try {
-      if (existingBloc) {
-        await $fetch<Bloc>(`/api/blocs/${existingBloc.id}`, {
+      if (blocRef.value) {
+        await $fetch<Bloc>(`/api/blocs/${blocRef.value.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: blocData,
@@ -75,6 +97,8 @@ export function useBlocForm(existingBloc: Bloc | null = null) {
     description,
     date_validation,
     mediaFile,
+    mediaFileName,
+    selectedFileName,
     submitBloc,
   };
 }

@@ -3,7 +3,8 @@ import { useSalles } from '@/composables/useSalles';
 import { useBlocForm } from '@/composables/useBlocForm';
 
 const { salles, fetchSalles } = useSalles();
-const { salleId, essai, couleur, titre, type, description, date_validation, mediaFile, submitBloc } = useBlocForm();
+const bloc = ref(null);
+const { salleId, essai, couleur, titre, type, description, date_validation, mediaFile, submitBloc } = useBlocForm(bloc);
 
 const selectedFileName = ref("");
 
@@ -23,19 +24,25 @@ onMounted(fetchSalles);
 </script>
 
 <template>
-    <div class="flex flex-col items-center text-white mt-10">
+    <div class="flex flex-col items-center text-white">
         <h1 class="text-2xl mb-5">Ajouter un nouveau bloc</h1>
         <form class="flex flex-col gap-4 w-96" @submit.prevent="submitBloc">
             <label>
                 Date de validation :
                 <br>
-                <input v-model="date_validation" type="date" required
-                    class="border-2 border-white text-[#858585] rounded-2xl p-2 w-full">
+                <div class="relative border-2 border-white rounded-lg p-2 w-full appearance-none">
+                    <input v-model="date_validation" type="date" required
+                        class="w-full border-0 focus-border-0 focus:outline-none bg-transparent"
+                        :class="date_validation ? 'text-white' : 'text-[#858585]'" />
+                    <Icon name="heroicons-solid:calendar"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white pointer-events-none text-2xl" />
+                </div>
             </label>
 
             <label>
                 Salle :
-                <select v-model="salleId" required class="border-2 border-white rounded-2xl p-2 w-full text-[#858585]">
+                <select v-model="salleId" required class="border-2 border-white rounded-lg p-2 w-full"
+                    :class="salleId ? 'text-white' : 'text-[#858585]'">
                     <option :value="null" disabled>Sélectionnez une salle</option>
                     <option v-for="salle in salles" :key="salle.id" :value="salle.id" class="text-black">
                         {{ salle.name }}
@@ -47,14 +54,14 @@ onMounted(fetchSalles);
                 Titre :
                 <br>
                 <input v-model="titre" type="text" placeholder="Ajouter un titre" required
-                    class="border-2 border-white rounded-2xl p-2 w-full">
+                    class="border-2 border-white rounded-lg p-2 w-full">
             </label>
 
             <label>
                 Description :
                 <br>
                 <textarea v-model="description" placeholder="Ajoutez une description"
-                    class="border-2 border-white rounded-2xl p-2 w-full" />
+                    class="border-2 border-white rounded-lg p-2 w-full" />
             </label>
 
             <label>
@@ -85,7 +92,8 @@ onMounted(fetchSalles);
 
             <label>
                 Difficulté (couleur) :
-                <select v-model="couleur" required class="border-2 border-white rounded-2xl p-2 w-full text-[#858585]">
+                <select v-model="couleur" required class="border-2 border-white rounded-lg p-2 w-full"
+                    :class="couleur ? 'text-white' : 'text-[#858585]'">
                     <option value="" disabled>Sélectionnez une couleur</option>
                     <option value="jaune" class="text-black">Jaune</option>
                     <option value="orange" class="text-black">Orange</option>
@@ -101,7 +109,8 @@ onMounted(fetchSalles);
             <label>
                 Type de bloc :
                 <br>
-                <select v-model="type" required class="border-2 border-white rounded-2xl p-2 w-full text-[#858585]">
+                <select v-model="type" required class="border-2 border-white rounded-lg p-2 w-full"
+                    :class="type ? 'text-white' : 'text-[#858585]'">
                     <option value="" disabled>Sélectionnez un type de bloc</option>
                     <option value="dalle" class="text-black">Dalle</option>
                     <option value="vertical" class="text-black">Vertical</option>
@@ -115,7 +124,7 @@ onMounted(fetchSalles);
 
             <label>
                 Image :
-                <div class="flex items-center gap-2 cursor-pointer border-2 border-white text-white p-2 rounded-2xl ">
+                <div class="flex items-center gap-2 cursor-pointer border-2 border-white text-white p-2 rounded-lg ">
                     <div class="flex items-center gap-2">
                         <Icon name="heroicons-solid:photograph" class="text-white text-2xl" />
                         <p v-if="selectedFileName" class="text-sm text-[#858585]">{{ selectedFileName }}</p>

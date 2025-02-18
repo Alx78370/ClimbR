@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { ref, onMounted } from "vue";
 import { useSalles } from "@/composables/useSalles";
 import { useBlocForm } from "@/composables/useBlocForm";
 
@@ -24,7 +23,17 @@ onMounted(async () => {
     await fetchBloc();
 });
 
-const { salleId, essai, couleur, titre, type, description, date_validation, mediaFile, submitBloc } = useBlocForm(bloc.value);
+const { salleId, essai, couleur, titre, type, description, date_validation, mediaFile, mediaFileName, selectedFileName, submitBloc } = useBlocForm(bloc);
+
+function handleFileChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0] || null;
+
+    if (file) {
+        mediaFile.value = file;
+        selectedFileName.value = file.name;
+    }
+}
 </script>
 
 <template>
@@ -32,66 +41,119 @@ const { salleId, essai, couleur, titre, type, description, date_validation, medi
 
     <div v-else class="flex flex-col items-center text-white mt-10">
         <h1 class="text-2xl mb-5">Modifier le bloc</h1>
-        <form class="flex flex-col gap-4 w-80" @submit.prevent="submitBloc">
+        <form class="flex flex-col gap-4 w-96" @submit.prevent="submitBloc">
             <label>
                 Date de validation :
-                <input v-model="date_validation" type="date" required>
+                <br>
+                <div class="relative border-2 border-white rounded-lg p-2 w-full appearance-none">
+                    <input v-model="date_validation" type="date" required
+                        class="w-full border-0 focus-border-0 focus:outline-none bg-transparent"
+                        :class="date_validation ? 'text-white' : 'text-[#858585]'" />
+                    <Icon name="heroicons-solid:calendar"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white pointer-events-none text-2xl" />
+                </div>
             </label>
 
             <label>
                 Salle :
-                <select v-model="salleId" required>
-                    <option value="" disabled>Sélectionnez une salle</option>
-                    <option v-for="salle in salles" :key="salle.id" :value="salle.id">
+                <select v-model="salleId" required class="border-2 border-white rounded-lg p-2 w-full"
+                    :class="salleId ? 'text-white' : 'text-[#858585]'">
+                    <option :value="null" disabled>Sélectionnez une salle</option>
+                    <option v-for="salle in salles" :key="salle.id" :value="salle.id" class="text-black">
                         {{ salle.name }}
                     </option>
                 </select>
             </label>
 
             <label>
+                Titre :
+                <br>
+                <input v-model="titre" type="text" placeholder="Modifier le titre" required
+                    class="border-2 border-white rounded-lg p-2 w-full">
+            </label>
+
+            <label>
+                Description :
+                <br>
+                <textarea v-model="description" placeholder="Modifier la description"
+                    class="border-2 border-white rounded-lg p-2 w-full" />
+            </label>
+
+            <label>
                 Nb d'essais :
-                <div class="flex flex-col">
-                    <label><input v-model="essai" type="radio" value="Flash"> Flash</label>
-                    <label><input v-model="essai" type="radio" value="2-5"> 2-5</label>
-                    <label><input v-model="essai" type="radio" value="6-9"> 6-9</label>
-                    <label><input v-model="essai" type="radio" value="10+"> 10+</label>
+                <div class="flex w-full justify-between">
+                    <div class="flex flex-col">
+                        <label>
+                            <input v-model="essai" type="radio" value="Flash">
+                            Flash
+                        </label>
+                        <label>
+                            <input v-model="essai" type="radio" value="2-5">
+                            Entre 2 et 5
+                        </label>
+                    </div>
+                    <div class="flex flex-col">
+                        <label>
+                            <input v-model="essai" type="radio" value="6-9">
+                            Entre 6 et 9
+                        </label>
+                        <label>
+                            <input v-model="essai" type="radio" value="10+">
+                            10 et plus
+                        </label>
+                    </div>
                 </div>
             </label>
 
             <label>
                 Difficulté (couleur) :
-                <input v-model="couleur" type="text" required>
-            </label>
-
-            <label>
-                Titre :
-                <input v-model="titre" type="text" required class="text-white">
-            </label>
-
-            <label>
-                Description :
-                <textarea v-model="description"></textarea>
+                <select v-model="couleur" required class="border-2 border-white rounded-lg p-2 w-full"
+                    :class="couleur ? 'text-white' : 'text-[#858585]'">
+                    <option value="" disabled>Sélectionnez une couleur</option>
+                    <option value="jaune" class="text-black">Jaune</option>
+                    <option value="orange" class="text-black">Orange</option>
+                    <option value="vert" class="text-black">Vert</option>
+                    <option value="bleu" class="text-black">Bleu</option>
+                    <option value="rose" class="text-black">Rose</option>
+                    <option value="rouge" class="text-black">Rouge</option>
+                    <option value="noir" class="text-black">Noir</option>
+                    <option value="violet" class="text-black">Violet</option>
+                </select>
             </label>
 
             <label>
                 Type de bloc :
-                <select v-model="type" required>
-                    <option value="dalle">Dalle</option>
-                    <option value="vertical">Vertical</option>
-                    <option value="leger_devers">Léger dévers</option>
-                    <option value="gros_devers">Gros dévers</option>
-                    <option value="toit">Toit</option>
-                    <option value="diedre">Dièdre</option>
-                    <option value="arete">Arête</option>
+                <br>
+                <select v-model="type" required class="border-2 border-white rounded-lg p-2 w-full"
+                    :class="type ? 'text-white' : 'text-[#858585]'">
+                    <option value="" disabled>Sélectionnez un type de bloc</option>
+                    <option value="dalle" class="text-black">Dalle</option>
+                    <option value="vertical" class="text-black">Vertical</option>
+                    <option value="leger_devers" class="text-black">Léger dévers</option>
+                    <option value="gros_devers" class="text-black">Gros dévers</option>
+                    <option value="toit" class="text-black">Toit</option>
+                    <option value="diedre" class="text-black">Dièdre</option>
+                    <option value="arete" class="text-black">Arête</option>
                 </select>
             </label>
 
             <label>
                 Image :
-                <input type="file" accept="image/*">
+                <div class="flex items-center gap-2 cursor-pointer border-2 border-white text-white p-2 rounded-lg ">
+                    <div class="flex items-center gap-2">
+                        <Icon name="heroicons-solid:photograph" class="text-white text-2xl" />
+                        <p class="text-sm" :class="type ? 'text-white' : 'text-[#858585]'">
+                            {{ selectedFileName || (mediaFileName ? mediaFileName.split('/').pop() : "Aucune image") }}
+                        </p>
+                    </div>
+                    <input type="file" accept="image/*" class="hidden" @change="handleFileChange">
+                </div>
             </label>
 
-            <button type="submit" class="bg-green-500 p-3 rounded-2xl">Mettre à jour</button>
+            <button type="submit"
+                class="bg-orange-500 p-3 rounded-2xl cursor-pointer font-bold hover:scale-105 hover:ease-in-out hover:duration-300 transition-all">
+                Mettre à jour
+            </button>
         </form>
     </div>
 </template>
