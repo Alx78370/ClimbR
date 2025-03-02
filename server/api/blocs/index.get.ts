@@ -18,7 +18,9 @@ export default defineEventHandler(async (_event): Promise<Bloc[]> => {
         TO_CHAR(b.updated_at, 'DD/MM/YYYY') AS updated_at,
         s.name AS salle_name
       FROM bloc b
-      JOIN salle s ON s.id = b.salle_id;
+      JOIN salle s ON s.id = b.salle_id
+      ORDER BY b.date_validation DESC;
+      
     `);
     return rows as Bloc[];
   } catch (error) {

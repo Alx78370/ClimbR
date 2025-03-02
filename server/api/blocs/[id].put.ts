@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     const { rows } = await pool.query(
       `
       UPDATE bloc
-      SET essai = $1, couleur = $2, description = $3, media = $4, date_validation = $5, type = $6, titre = $7, updated_at = NOW()
+      SET essai = $1, couleur = $2, description = $3, media = $4, date_validation = $5::TIMESTAMP, type = $6, titre = $7, updated_at = NOW()
       WHERE id = $8
       RETURNING *;
       `,

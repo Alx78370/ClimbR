@@ -17,8 +17,8 @@ const colorClasses: { [key: string]: string } = {
 const blocTypeMap = {
     dalle: 'Dalle',
     vertical: 'Vertical',
-    leger_devers: 'Léger Dévers',
-    gros_devers: 'Gros Dévers',
+    leger_devers: 'Léger dévers',
+    gros_devers: 'Gros dévers',
     toit: 'Toit',
     diedre: 'Dièdre',
     arete: 'Arête',

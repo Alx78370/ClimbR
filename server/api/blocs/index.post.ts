@@ -34,9 +34,9 @@ export default defineEventHandler(async (event) => {
     const { rows } = await pool.query(
       `
       INSERT INTO bloc (salle_id, essai, couleur, media, description, date_validation, type, titre, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+      VALUES ($1, $2, $3, $4, $5, $6::TIMESTAMP, $7, $8, NOW(), NOW())
       RETURNING id, salle_id, essai, couleur, media, description, type, titre,
-                TO_CHAR(date_validation, 'DD/MM/YYYY') AS date_validation,
+                TO_CHAR(date_validation AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS date_validation,
                 TO_CHAR(created_at, 'DD/MM/YYYY') AS created_at,
                 TO_CHAR(updated_at, 'DD/MM/YYYY') AS updated_at;
       `,

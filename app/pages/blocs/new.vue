@@ -127,7 +127,7 @@ onMounted(fetchSalles);
                 <div class="flex items-center gap-2 cursor-pointer border-2 border-white text-white p-2 rounded-lg ">
                     <div class="flex items-center gap-2">
                         <Icon name="heroicons-solid:photograph" class="text-white text-2xl" />
-                        <p v-if="selectedFileName" class="text-sm text-[#858585]">{{ selectedFileName }}</p>
+                        <p v-if="selectedFileName" class="text-sm text-white">{{ selectedFileName }}</p>
                         <p v-else class="text-[#858585]">Choisir une image</p>
                     </div>
                     <input type="file" accept="image/*" class="hidden" @change="handleFileChange">
