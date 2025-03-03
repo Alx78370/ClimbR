@@ -1,9 +1,13 @@
 import pool from "../../db";
 import type { Bloc } from "../../../types/bloc";
 
-export default defineEventHandler(async (_event): Promise<Bloc[]> => {
+export default defineEventHandler(async (event): Promise<Bloc[]> => {
   try {
-    const { rows } = await pool.query(`
+    // Récupérer l'utilisateur connecté
+    const userSession = await requireUserSession(event);
+
+    const { rows } = await pool.query(
+      `
       SELECT 
         b.id,
         b.salle_id,
@@ -19,9 +23,12 @@ export default defineEventHandler(async (_event): Promise<Bloc[]> => {
         s.name AS salle_name
       FROM bloc b
       JOIN salle s ON s.id = b.salle_id
+      WHERE b.user_id = $1
       ORDER BY b.date_validation DESC;
-      
-    `);
+      `,
+      [userSession.user.id],
+    );
+
     return rows as Bloc[];
   } catch (error) {
     console.error("Erreur lors de la requête à la BDD :", error);

@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { useBlocs } from '@/composables/useBlocs';
+import authMiddleware from '../../middleware/auth';
+
+definePageMeta({
+    middleware: [authMiddleware]
+});
 
 const { blocs, fetchBlocs, deleteBloc } = useBlocs();
 

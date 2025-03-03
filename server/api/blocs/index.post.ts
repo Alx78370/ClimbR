@@ -3,8 +3,10 @@ import type { Bloc } from "../../../types/bloc";
 
 export default defineEventHandler(async (event) => {
   try {
-    const body = await readBody(event);
+    // Vérifier si l'utilisateur est connecté
+    const userSession = await requireUserSession(event); // Récupère l'utilisateur connecté
 
+    const body = await readBody(event);
     const {
       salle_id,
       essai,
@@ -16,6 +18,7 @@ export default defineEventHandler(async (event) => {
       date_validation,
     } = body;
 
+    // Vérification des champs obligatoires
     if (
       !salle_id ||
       !essai ||
@@ -31,10 +34,11 @@ export default defineEventHandler(async (event) => {
       };
     }
 
+    // Insertion du bloc en base de données avec `user_id`
     const { rows } = await pool.query(
       `
-      INSERT INTO bloc (salle_id, essai, couleur, media, description, date_validation, type, titre, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6::TIMESTAMP, $7, $8, NOW(), NOW())
+      INSERT INTO bloc (salle_id, essai, couleur, media, description, date_validation, type, titre, created_at, updated_at, user_id)
+      VALUES ($1, $2, $3, $4, $5, $6::TIMESTAMP, $7, $8, NOW(), NOW(), $9)
       RETURNING id, salle_id, essai, couleur, media, description, type, titre,
                 TO_CHAR(date_validation AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS date_validation,
                 TO_CHAR(created_at, 'DD/MM/YYYY') AS created_at,
@@ -49,6 +53,7 @@ export default defineEventHandler(async (event) => {
         date_validation,
         type,
         titre,
+        userSession.user.id, // Ajoute l'ID de l'utilisateur connecté
       ],
     );
 
