@@ -24,8 +24,8 @@ const handleRegister = async () => {
         <div class="flex flex-col justify-center items-center w-1/2 bg-neutral-900 p-10 gap-10 rounded-2xl">
             <h2 class="text-xl">Inscription</h2>
             <form class="flex flex-col items-start w-full gap-5" @submit.prevent="handleRegister">
-                <input class="border-2 border-neutral-800 rounded-xl p-3 w-full" v-model="email" type="email"
-                    placeholder="Email" required />
+                <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="email"
+                    type="email" placeholder="Email" required />
                 <input class="border-2 border-neutral-800 rounded-xl p-3 w-full" v-model="password" type="password"
                     placeholder="Mot de passe" required />
                 <button
@@ -41,3 +41,14 @@ const handleRegister = async () => {
         </div>
     </div>
 </template>
+
+
+<style scoped>
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #1e293b00 inset !important;
+    -webkit-text-fill-color: #fff !important;
+    box-shadow: 0 0 0 1000px #1e293b00 inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+</style>
