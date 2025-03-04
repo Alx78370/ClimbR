@@ -20,23 +20,23 @@ const handleLogin = async () => {
 </script>
 
 <template>
-    <div class="w-full md:w-2/3 md:mx-auto flex justify-center items-center my-auto">
-        <div class="flex flex-col justify-center items-center w-[40%] bg-neutral-900 p-10 gap-10 rounded-2xl">
+    <div class="w-full md:w-2/3 md:mx-auto flex justify-center items-center h-[80vh]">
+        <div class="flex flex-col justify-center items-center w-1/2 bg-neutral-900 p-10 gap-10 rounded-2xl">
             <h2 class="text-xl">Connexion</h2>
-            <form class="flex flex-col items-start w-full" @submit.prevent="handleLogin">
+            <form class="flex flex-col items-start w-full gap-5" @submit.prevent="handleLogin">
                 <input class="border-2 border-neutral-800 rounded-xl p-3 w-full" v-model="email" type="email"
                     placeholder="Email" required />
-                <br>
                 <input class="border-2 border-neutral-800 rounded-xl p-3 w-full" v-model="password" type="password"
                     placeholder="Mot de passe" required />
-                <br>
                 <button
                     class="py-3 px-10 rounded-2xl bg-neutral-800 border-2 border-transparent hover:border-2 hover:border-neutral-400 cursor-pointer"
                     type="submit">Se
                     connecter</button>
             </form>
             <p v-if="errorMessage">{{ errorMessage }}</p>
-            <p>Pas encore inscrit ? <NuxtLink to="/register">Créer un compte</NuxtLink>
+            <p>Pas encore inscrit ? <NuxtLink to="/register"
+                    class="text-orange-500 underline underline-offset-2 hover:text-white transition-colors duration-200 ease-in-out">
+                    Créer un compte</NuxtLink>
             </p>
         </div>
     </div>
