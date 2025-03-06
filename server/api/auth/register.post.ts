@@ -3,9 +3,9 @@ import { generateUniqueUsername } from "../../utils/generateUsername";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const { email, password, firstName, lastName } = body;
+  const { email, password, first_name, last_name } = body;
 
-  if (!email || !password || !firstName || !lastName) {
+  if (!email || !password || !first_name || !last_name) {
     throw createError({
       statusCode: 400,
       statusMessage: "Email, mot de passe, prénom et nom requis",
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Générer un pseudo unique
-    const username = await generateUniqueUsername(firstName, lastName);
+    const username = await generateUniqueUsername(first_name, last_name);
 
     // Hacher le mot de passe
     const hashedPassword = await hashPassword(password);
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     // Insérer l'utilisateur
     const result = await client.query(
       "INSERT INTO users (email, password, first_name, last_name, username) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, first_name, last_name, username",
-      [email, hashedPassword, firstName, lastName, username],
+      [email, hashedPassword, first_name, last_name, username],
     );
     const user = result.rows[0];
 

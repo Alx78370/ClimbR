@@ -12,6 +12,8 @@ export default defineEventHandler(async (event): Promise<Bloc[]> => {
       SELECT 
         b.*, 
         u.username AS owner_username,
+        u.first_name, 
+        u.last_name, 
         s.name AS salle_name,
         lower(TO_CHAR(b.date_validation, 'FMDD TMMonth YYYY')) AS date_validation,
         TO_CHAR(b.created_at, 'DD/MM/YYYY') AS created_at,
@@ -32,7 +34,7 @@ export default defineEventHandler(async (event): Promise<Bloc[]> => {
 
     return rows as Bloc[];
   } catch (error) {
-    console.error("Erreur lors de la requête à la BDD :", error);
+    console.error("❌ Erreur lors de la requête à la BDD :", error);
     throw error;
   }
 });

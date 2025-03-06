@@ -19,4 +19,6 @@ export interface Bloc {
   created_at: string;
   updated_at: string;
   user_id: number;
+  first_name: string;
+  last_name: string;
 }
