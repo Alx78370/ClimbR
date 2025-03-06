@@ -38,9 +38,9 @@ const logout = async () => {
                         <p v-if="message" class="text-green-400">{{ message }}</p>
                     </div>
 
-                    <button>
+                    <NuxtLink to="/friends">
                         Gérer mes demandes d'amis
-                    </button>
+                    </NuxtLink>
                     <button @click="logout">Déconnexion</button>
                 </div>
             </div>

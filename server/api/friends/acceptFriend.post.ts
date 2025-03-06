@@ -2,20 +2,20 @@ import pool from "../../db";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const { userId, friendId } = body;
+  const { friendshipId } = body;
 
-  if (!userId || !friendId) {
+  if (!friendshipId) {
     throw createError({ statusCode: 400, statusMessage: "Données manquantes" });
   }
 
   const client = await pool.connect();
   try {
     await client.query(
-      "UPDATE friendships SET status = 'accepted' WHERE user_id = $1 AND friend_id = $2",
-      [friendId, userId],
+      "UPDATE friendships SET status = 'accepted' WHERE id = $1",
+      [friendshipId],
     );
 
-    return { message: "Demande d'ami acceptée." };
+    return { message: "Demande d'ami acceptée" };
   } finally {
     client.release();
   }

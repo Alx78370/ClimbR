@@ -22,4 +22,10 @@ export default defineNuxtConfig({
       maxAge: 60 * 60 * 24 * 7,
     },
   },
+  components: [
+    {
+      path: "~/components",
+      pathPrefix: false,
+    },
+  ],
 });
