@@ -1,22 +1,29 @@
 <script setup lang="ts">
 
-const { fetch } = useUserSession()
-const email = ref('')
-const password = ref('')
-const errorMessage = ref('')
+const firstName = ref('');
+const lastName = ref('');
+const email = ref('');
+const password = ref('');
+const errorMessage = ref('');
 
 const handleRegister = async () => {
     try {
         await $fetch('/api/auth/register', {
             method: 'POST',
-            body: { email: email.value, password: password.value },
-        })
-        await fetch()
-        navigateTo('/')
+            body: {
+                firstName: firstName.value,
+                lastName: lastName.value,
+                email: email.value,
+                password: password.value
+            },
+        });
     } catch {
-        errorMessage.value = "Échec de l'inscription. Essaye un autre email."
+        errorMessage.value = "Échec de l'inscription. Essaye un autre email.";
+    } finally {
+        navigateTo('/');
+
     }
-}
+};
 </script>
 
 <template>
@@ -24,16 +31,21 @@ const handleRegister = async () => {
         <div class="flex flex-col justify-center items-center w-1/2 bg-neutral-900 p-10 gap-10 rounded-2xl">
             <h2 class="text-xl">Inscription</h2>
             <form class="flex flex-col items-start w-full gap-5" @submit.prevent="handleRegister">
+                <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="firstName"
+                    type="text" placeholder="Prénom" required />
+                <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="lastName"
+                    type="text" placeholder="Nom" required />
                 <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="email"
                     type="email" placeholder="Email" required />
                 <input class="border-2 border-neutral-800 rounded-xl p-3 w-full" v-model="password" type="password"
                     placeholder="Mot de passe" required />
                 <button
-                    class="py-3 px-10 rounded-2xl bg-neutral-800 border-2 border-transparent hover:border-2 hover:border-neutral-400 cursor-pointer"
+                    class="py-3 px-10 rounded-2xl bg-neutral-800 border-2 border-transparent hover:border-neutral-400 cursor-pointer"
                     type="submit">S'inscrire</button>
             </form>
-            <p v-if="errorMessage">{{ errorMessage }}</p>
-            <p>Déjà un compte ? <NuxtLink to="/login"
+            <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
+            <p>Déjà un compte ?
+                <NuxtLink to="/login"
                     class="text-orange-500 underline underline-offset-2 hover:text-white transition-colors duration-200 ease-in-out">
                     Se connecter
                 </NuxtLink>
@@ -41,7 +53,6 @@ const handleRegister = async () => {
         </div>
     </div>
 </template>
-
 
 <style scoped>
 input:-webkit-autofill,

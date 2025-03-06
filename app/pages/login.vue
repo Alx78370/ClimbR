@@ -5,6 +5,7 @@ const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
+
 const handleLogin = async () => {
     try {
         await $fetch('/api/auth/login', {
@@ -31,7 +32,8 @@ const handleLogin = async () => {
                 <button
                     class="py-3 px-10 rounded-2xl bg-neutral-800 border-2 border-transparent hover:border-2 hover:border-neutral-400 cursor-pointer"
                     type="submit">Se
-                    connecter</button>
+                    connecter
+                </button>
             </form>
             <p v-if="errorMessage">{{ errorMessage }}</p>
             <p>Pas encore inscrit ? <NuxtLink to="/register"
