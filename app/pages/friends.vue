@@ -1,16 +1,37 @@
 <script setup lang="ts">
-const { requests, fetchRequests, acceptRequest, rejectRequest } = useFriends();
+const { requests, friends, fetchRequests, fetchFriends, acceptRequest, rejectRequest } = useFriends();
+const { user } = useUserSession();
+const activeTab = ref<'requests' | 'friends'>('requests');
+const userId = user.value?.id
 
-onMounted(() => {
-    fetchRequests();
+function setActiveTab(tab: 'requests' | 'friends') {
+    activeTab.value = tab;
+}
+
+onMounted(async () => {
+    await fetchRequests();
+    if (userId) {
+        await fetchFriends(userId);
+    }
 });
 </script>
 
 <template>
     <div class="flex flex-col items-center p-6">
-        <h1 class="text-2xl font-bold mb-6">Demandes d'amis</h1>
+        <!-- Onglets -->
+        <div class="flex items-center gap-6">
+            <button class="font-bold mb-6 pr-6 border-r-2"
+                :class="{ 'text-orange-500 border-white': activeTab === 'requests' }" @click="setActiveTab('requests')">
+                Demandes d'amis
+            </button>
+            <button class="font-bold mb-6" :class="{ 'text-orange-500': activeTab === 'friends' }"
+                @click="setActiveTab('friends')">
+                Ma liste d'amis
+            </button>
+        </div>
 
-        <ul v-if="requests.length > 0" class="w-full max-w-md space-y-4">
+        <!-- Affichage des demandes d'amis -->
+        <ul v-if="activeTab === 'requests' && requests.length" class="w-full max-w-md space-y-4">
             <li v-for="request in requests" :key="request.id"
                 class="flex justify-between items-center bg-gray-800 text-white p-4 rounded-lg shadow-md">
                 <span class="text-lg">{{ request.username }}</span>
@@ -26,8 +47,19 @@ onMounted(() => {
                 </div>
             </li>
         </ul>
+        <p v-else-if="activeTab === 'requests'" class="text-gray-400">Aucune demande en attente.</p>
 
-        <p v-else class="text-gray-400">Aucune demande en attente.</p>
+        <!-- Affichage de la liste d'amis -->
+        <ul v-if="activeTab === 'friends' && friends.length" class="w-full max-w-md space-y-4">
+            <li v-for="friend in friends" :key="friend.id"
+                class="flex justify-between items-center bg-gray-800 text-white p-4 rounded-lg shadow-md">
+                <span class="text-lg">{{ friend.username }}</span>
+                <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+                    Supprimer
+                </button>
+            </li>
+        </ul>
+        <p v-else-if="activeTab === 'friends'" class="text-gray-400">Aucun ami pour l'instant.</p>
 
         <NuxtLink to="/" class="mt-6 text-orange-500 hover:underline text-lg">
             ← Retour à l'accueil
