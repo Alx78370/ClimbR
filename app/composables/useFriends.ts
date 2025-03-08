@@ -69,7 +69,11 @@ export function useFriends() {
   // Récupérer la liste des amis
   const fetchFriends = async (userId: number): Promise<void> => {
     try {
-      friends.value = await $fetch<Friend[]>(`/api/friends/${userId}`);
+      const response = await $fetch<{ friends: Friend[] }>(
+        `/api/friends/${userId}`,
+      );
+      console.log("Réponse de fetchFriends:", response); // Debugging
+      friends.value = response.friends;
     } catch (error) {
       console.error("Erreur lors du chargement des amis :", error);
     }

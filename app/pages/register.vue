@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-const firstName = ref('');
-const lastName = ref('');
+const first_name = ref('');
+const last_name = ref('');
 const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
@@ -11,8 +11,8 @@ const handleRegister = async () => {
         await $fetch('/api/auth/register', {
             method: 'POST',
             body: {
-                firstName: firstName.value,
-                lastName: lastName.value,
+                first_name: first_name.value,
+                last_name: last_name.value,
                 email: email.value,
                 password: password.value
             },
@@ -31,9 +31,9 @@ const handleRegister = async () => {
         <div class="flex flex-col justify-center items-center w-1/2 bg-neutral-900 p-10 gap-10 rounded-2xl">
             <h2 class="text-xl">Inscription</h2>
             <form class="flex flex-col items-start w-full gap-5" @submit.prevent="handleRegister">
-                <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="firstName"
+                <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="first_name"
                     type="text" placeholder="Prénom" required />
-                <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="lastName"
+                <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="last_name"
                     type="text" placeholder="Nom" required />
                 <input class="border-2 border-neutral-800 rounded-xl p-3 w-full bg-transparent" v-model="email"
                     type="email" placeholder="Email" required />

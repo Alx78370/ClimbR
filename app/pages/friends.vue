@@ -33,7 +33,7 @@ onMounted(async () => {
         <!-- Affichage des demandes d'amis -->
         <ul v-if="activeTab === 'requests' && requests.length" class="w-full max-w-md space-y-4">
             <li v-for="request in requests" :key="request.id"
-                class="flex justify-between items-center bg-gray-800 text-white p-4 rounded-lg shadow-md">
+                class="flex justify-between items-center bg-neutral-900 text-white p-4 rounded-lg shadow-md">
                 <span class="text-lg">{{ request.username }}</span>
                 <div class="flex space-x-2">
                     <button @click="acceptRequest(request.id)"
@@ -52,11 +52,9 @@ onMounted(async () => {
         <!-- Affichage de la liste d'amis -->
         <ul v-if="activeTab === 'friends' && friends.length" class="w-full max-w-md space-y-4">
             <li v-for="friend in friends" :key="friend.id"
-                class="flex justify-between items-center bg-gray-800 text-white p-4 rounded-lg shadow-md">
+                class="flex justify-between items-center bg-neutral-900 text-white p-4 rounded-lg shadow-md">
                 <span class="text-lg">{{ friend.username }}</span>
-                <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
-                    Supprimer
-                </button>
+                <Icon name="typcn:delete" class="text-4xl" />
             </li>
         </ul>
         <p v-else-if="activeTab === 'friends'" class="text-gray-400">Aucun ami pour l'instant.</p>
