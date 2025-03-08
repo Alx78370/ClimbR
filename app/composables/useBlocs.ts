@@ -13,6 +13,14 @@ export function useBlocs() {
     }
   }
 
+  async function fetchUserBlocs() {
+    try {
+      blocs.value = await $fetch<Bloc[]>("/api/users/blocs");
+    } catch (error) {
+      console.error("Erreur lors du chargement de mes blocs :", error);
+    }
+  }
+
   async function deleteBloc(id: number) {
     if (!confirm("Êtes-vous sûr de vouloir supprimer ce bloc ?")) {
       return false;
@@ -21,9 +29,7 @@ export function useBlocs() {
     try {
       const response = await $fetch<{ success: boolean; message?: string }>(
         `/api/blocs/${id}`,
-        {
-          method: "DELETE",
-        },
+        { method: "DELETE" },
       );
 
       if (response.success) {
@@ -44,6 +50,7 @@ export function useBlocs() {
     blocs,
     isLoading,
     fetchBlocs,
+    fetchUserBlocs,
     deleteBloc,
   };
 }

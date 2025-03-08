@@ -31,7 +31,7 @@ const copyToClipboard = async () => {
         <div class="flex justify-between w-[60%] mx-auto">
             <nav class="text-white flex gap-5 items-center">
                 <NuxtLink to="/" class="hover:underline">Accueil</NuxtLink>
-                <NuxtLink to="/blocs" class="hover:underline">Mes blocs</NuxtLink>
+                <NuxtLink to="/users/blocs" class="hover:underline">Mes blocs</NuxtLink>
             </nav>
             <div class="flex gap-5 items-center">
                 <div class="group relative flex flex-col gap-2 text-white" @mouseenter="showDropdown = true"
@@ -66,7 +66,7 @@ const copyToClipboard = async () => {
                             <p v-if="message" class="text-green-400">{{ message }}</p>
                         </div>
 
-                        <NuxtLink to="/friends" class="cursor-pointer p-2 hover:bg-neutral-900 text-nowrap">
+                        <NuxtLink to="/profil" class="cursor-pointer p-2 hover:bg-neutral-900 text-nowrap">
                             Mon profil
                         </NuxtLink>
                         <button

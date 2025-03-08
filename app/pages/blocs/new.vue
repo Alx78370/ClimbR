@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { useSalles } from '@/composables/useSalles';
 import { useBlocForm } from '@/composables/useBlocForm';
+import authMiddleware from "../../../middleware/auth";
 
 const { salles, fetchSalles } = useSalles();
 const bloc = ref(null);
 const { salleId, essai, couleur, titre, type, description, date_validation, mediaFile, submitBloc } = useBlocForm(bloc);
 
 const selectedFileName = ref("");
+
+definePageMeta({
+    middleware: [authMiddleware],
+});
 
 function handleFileChange(event: Event) {
     const target = event.target as HTMLInputElement;

@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import authMiddleware from "../../middleware/auth";
+
 const { requests, friends, fetchRequests, fetchFriends, acceptRequest, rejectRequest } = useFriends();
 const { user } = useUserSession();
-const activeTab = ref<'requests' | 'friends'>('requests');
+const activeTab = ref<'profil' | 'requests' | 'friends'>('profil');
 const userId = user.value?.id
 
-function setActiveTab(tab: 'requests' | 'friends') {
+function setActiveTab(tab: 'profil' | 'requests' | 'friends') {
     activeTab.value = tab;
 }
+
+definePageMeta({
+    middleware: [authMiddleware],
+});
 
 onMounted(async () => {
     await fetchRequests();
@@ -20,11 +26,15 @@ onMounted(async () => {
     <div class="flex flex-col items-center p-6">
         <!-- Onglets -->
         <div class="flex items-center gap-6">
-            <button class="font-bold mb-6 pr-6 border-r-2"
+            <button class="font-bold mb-6 pr-6 border-r-2 cursor-pointer"
+                :class="{ 'text-orange-500 border-white': activeTab === 'profil' }" @click="setActiveTab('profil')">
+                Mon profil
+            </button>
+            <button class="font-bold mb-6 pr-6 border-r-2 cursor-pointer"
                 :class="{ 'text-orange-500 border-white': activeTab === 'requests' }" @click="setActiveTab('requests')">
                 Demandes d'amis
             </button>
-            <button class="font-bold mb-6" :class="{ 'text-orange-500': activeTab === 'friends' }"
+            <button class="font-bold mb-6 cursor-pointer" :class="{ 'text-orange-500': activeTab === 'friends' }"
                 @click="setActiveTab('friends')">
                 Ma liste d'amis
             </button>

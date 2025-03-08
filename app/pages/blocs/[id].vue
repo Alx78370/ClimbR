@@ -2,12 +2,17 @@
 import { useRoute } from "vue-router";
 import { useSalles } from "@/composables/useSalles";
 import { useBlocForm } from "@/composables/useBlocForm";
+import authMiddleware from "../../../middleware/auth";
 
 const route = useRoute();
 const blocId = route.params.id;
 const { salles, fetchSalles } = useSalles();
 const bloc = ref(null);
 const isLoading = ref(true);
+
+definePageMeta({
+    middleware: [authMiddleware],
+});
 
 async function fetchBloc() {
     try {
@@ -39,7 +44,7 @@ function handleFileChange(event: Event) {
 <template>
     <div v-if="isLoading" class="text-white text-center mt-10">Chargement...</div>
 
-    <div v-else class="flex flex-col items-center text-white mt-10">
+    <div v-else class="flex flex-col items-center text-white">
         <h1 class="text-2xl mb-5">Modifier le bloc</h1>
         <form class="flex flex-col gap-4 w-96" @submit.prevent="submitBloc">
             <label>
