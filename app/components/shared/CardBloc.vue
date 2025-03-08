@@ -45,10 +45,10 @@ const blocTypeMap: Record<string, string> = {
 </script>
 
 <template>
-    <article class="flex bg-neutral-900 text-white w-full h-[500px] rounded p-5 gap-10">
+    <article class="flex flex-col bg-neutral-900 text-white w-full rounded p-5 gap-5">
         <img :src="`/uploads/${bloc.media}`" :alt="`bloc ${bloc.couleur} à ${bloc.salle_name}`"
-            class="w-1/2 rounded object-cover" />
-        <div class="flex flex-col gap-5 w-1/2">
+            class="w-full h-[500px] rounded object-cover" />
+        <div class="flex flex-col gap-5 w-full">
             <div>
                 <div class="flex justify-between items-start w-full">
                     <div>

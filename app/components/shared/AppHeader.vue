@@ -45,24 +45,22 @@ const copyToClipboard = async () => {
                         class="flex flex-col absolute top-full right-0 border-x-2 border-b-2 border-neutral-900 rounded-b bg-neutral-950 w-[200px]">
                         <div class="absolute top-0 left-0 w-[65.5%] h-[1.5px] bg-neutral-900"></div>
                         <div class="flex items-center justify-center hover:bg-neutral-900">
-                            <p class=" cursor-pointer select-text font-bold p-2 hover:text-orange-500"
-                                @click="copyToClipboard">
+                            <p class=" cursor-pointer select-text font-bold p-2" @click="copyToClipboard">
                                 {{ user?.username }}
                             </p>
                             <button class="cursor-pointer flex items-end justify-center" @click="copyToClipboard">
-                                <Icon name="lucide:copy" class="w-5 h-5 hover:text-orange-500" />
+                                <Icon v-if="copySuccess" name="lucide:copy-check" class="w-5 h-5" />
+                                <Icon v-else name="lucide:copy" class="w-5 h-5 " />
                             </button>
                         </div>
-                        <p v-if="copySuccess" class="text-white text-xs text-center">Copié !</p>
-
                         <button class="cursor-pointer p-2 hover:bg-neutral-900 text-nowrap"
                             @click="showAddFriendInput = !showAddFriendInput">
                             Ajouter un ami
                         </button>
 
-                        <div v-if="showAddFriendInput" class="flex flex-col my-2">
+                        <div v-if="showAddFriendInput" class="flex flex-col">
                             <input v-model="friendUsername" type="text" placeholder="Pseudo#1234"
-                                class="border p-1 rounded bg-neutral-900 text-white text-center" />
+                                class="border p-2 rounded bg-neutral-900 text-white text-center" />
                             <button @click="sendFriendRequest(user?.id, friendUsername)"
                                 class="mt-2 bg-orange-500 text-white p-2 rounded cursor-pointer">Envoyer</button>
                             <p v-if="message" class="text-green-400">{{ message }}</p>
