@@ -3,13 +3,15 @@ import type { Bloc } from "../../types/bloc";
 
 export function useBlocs() {
   const blocs = ref<Bloc[]>([]);
-  const isLoading = ref(false);
+  const isLoading = ref(true);
 
   async function fetchBlocs() {
     try {
       blocs.value = await $fetch<Bloc[]>("/api/blocs");
     } catch (error) {
       console.error("Erreur lors du chargement des blocs :", error);
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -18,6 +20,8 @@ export function useBlocs() {
       blocs.value = await $fetch<Bloc[]>("/api/users/blocs");
     } catch (error) {
       console.error("Erreur lors du chargement de mes blocs :", error);
+    } finally {
+      isLoading.value = false;
     }
   }
 

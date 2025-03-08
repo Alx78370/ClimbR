@@ -72,7 +72,6 @@ export function useFriends() {
       const response = await $fetch<{ friends: Friend[] }>(
         `/api/friends/${userId}`,
       );
-      console.log("Réponse de fetchFriends:", response); // Debugging
       friends.value = response.friends;
     } catch (error) {
       console.error("Erreur lors du chargement des amis :", error);

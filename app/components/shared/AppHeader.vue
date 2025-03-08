@@ -13,6 +13,19 @@ const logout = async () => {
     navigateTo('/login');
 };
 
+const sendFriendRequestWithFeedback = async () => {
+    if (!friendUsername.value || !user.value?.id) return;
+
+    await sendFriendRequest(user.value.id, friendUsername.value);
+
+    setTimeout(() => {
+        message.value = '';
+        friendUsername.value = '';
+        showAddFriendInput.value = false;
+    }, 3000);
+};
+
+
 const copyToClipboard = async () => {
     try {
         if (user.value?.username) {
@@ -37,7 +50,7 @@ const copyToClipboard = async () => {
                 <div class="group relative flex flex-col gap-2 text-white" @mouseenter="showDropdown = true"
                     @mouseleave="showDropdown = false">
                     <button v-if="loggedIn"
-                        class="flex items-center justify-center hover:underline underline-offset-4 border-x-2 border-t-2 border-transparent hover:cursor-pointer group-hover:border-x-2 group-hover:border-t-2 group-hover:pl-2 group-hover:border-neutral-900 rounded-t">
+                        class="flex items-center justify-center hover:underline underline-offset-4 border-x-2 border-t-2 border-transparent hover:cursor-pointer group-hover:border-x-2 group-hover:border-t-2 group-hover:pl-2 group-hover:border-neutral-900 rounded-t py-4">
                         <Icon name="lucide:circle-user-round" class="text-4xl" />
                         <Icon name="lucide:chevron-down" class="text-2xl" />
                     </button>
@@ -61,9 +74,9 @@ const copyToClipboard = async () => {
                         <div v-if="showAddFriendInput" class="flex flex-col">
                             <input v-model="friendUsername" type="text" placeholder="Pseudo#1234"
                                 class="border p-2 rounded bg-neutral-900 text-white text-center" />
-                            <button @click="sendFriendRequest(user?.id, friendUsername)"
+                            <button @click="sendFriendRequestWithFeedback"
                                 class="mt-2 bg-orange-500 text-white p-2 rounded cursor-pointer">Envoyer</button>
-                            <p v-if="message" class="text-green-400">{{ message }}</p>
+                            <p v-if="message" class="text-orange-500">{{ message }}</p>
                         </div>
 
                         <NuxtLink to="/profil" class="cursor-pointer p-2 hover:bg-neutral-900 text-nowrap">
