@@ -55,8 +55,10 @@ const copyToClipboard = async () => {
                         <Icon name="lucide:chevron-down" class="text-2xl" />
                     </button>
                     <div v-if="loggedIn && showDropdown"
-                        class="flex flex-col absolute top-full right-0 border-x-2 border-b-2 border-neutral-900 rounded-b bg-neutral-950 w-[200px]">
-                        <div class="absolute top-0 left-0 w-[65.5%] h-[1.5px] bg-neutral-900"></div>
+                        class="absolute -bottom-[1.5px] left-0 h-[1.5px] w-full bg-neutral-950 border-x-2 border-neutral-900 z-10 mx-auto">
+                    </div>
+                    <div v-if="loggedIn && showDropdown"
+                        class="flex flex-col absolute top-full right-0 border-2 border-neutral-900 rounded-b bg-neutral-950 w-fit px-2">
                         <div class="flex items-center justify-center hover:bg-neutral-900">
                             <p class=" cursor-pointer select-text font-bold p-2" @click="copyToClipboard">
                                 {{ user?.username }}
@@ -79,7 +81,7 @@ const copyToClipboard = async () => {
                             <p v-if="message" class="text-orange-500">{{ message }}</p>
                         </div>
 
-                        <NuxtLink to="/profil" class="cursor-pointer p-2 hover:bg-neutral-900 text-nowrap">
+                        <NuxtLink to="/profile" class="cursor-pointer p-2 hover:bg-neutral-900 text-nowrap">
                             Mon profil
                         </NuxtLink>
                         <button
@@ -98,3 +100,11 @@ const copyToClipboard = async () => {
         </div>
     </header>
 </template>
+
+<style scoped>
+.border-gradient {
+    border-width: 2px;
+    border-style: solid;
+    border-image: linear-gradient(to right, #f97316, #ef4444, #ec4899) 1;
+}
+</style>

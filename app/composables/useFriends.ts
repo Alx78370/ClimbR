@@ -37,30 +37,38 @@ export function useFriends() {
   };
 
   // Accepter une demande d'ami
-  const acceptRequest = async (friendshipId: number): Promise<void> => {
+  const acceptRequest = async (
+    friendshipId: string | number,
+  ): Promise<void> => {
     try {
       await $fetch<ApiResponse>("/api/friends/acceptFriend", {
         method: "POST",
-        body: { friendshipId },
+        body: { friendshipId: Number(friendshipId) },
       });
 
       message.value = "Ami accepté.";
-      requests.value = requests.value.filter((r) => r.id !== friendshipId);
+      requests.value = requests.value.filter(
+        (r) => r.id !== Number(friendshipId),
+      );
     } catch {
       message.value = "Erreur lors de l'acceptation.";
     }
   };
 
   // Refuser une demande d'ami
-  const rejectRequest = async (friendshipId: number): Promise<void> => {
+  const rejectRequest = async (
+    friendshipId: string | number,
+  ): Promise<void> => {
     try {
       await $fetch<ApiResponse>("/api/friends/rejectFriend", {
         method: "POST",
-        body: { friendshipId },
+        body: { friendshipId: Number(friendshipId) },
       });
 
       message.value = "Demande refusée.";
-      requests.value = requests.value.filter((r) => r.id !== friendshipId);
+      requests.value = requests.value.filter(
+        (r) => r.id !== Number(friendshipId),
+      );
     } catch {
       message.value = "Erreur lors du refus.";
     }
