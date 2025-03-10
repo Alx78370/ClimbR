@@ -24,6 +24,7 @@ onMounted(async () => {
 <template>
     <div class="flex flex-col items-center p-6">
         <ProfileTabs v-model:active-tab="activeTab" />
+        <ProfilePictureUploader v-if="activeTab === 'profil'" />
         <FriendRequests v-if="activeTab === 'requests'" :requests="requests" :accept-request="acceptRequest"
             :reject-request="rejectRequest" />
         <FriendsList v-if="activeTab === 'friends'" :friends="friends" />
