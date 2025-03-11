@@ -8,7 +8,7 @@ const { user } = useUserSession();
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const image = ref<string | null>(null);
-const profilePicture = ref<string | null>(user.value?.profilePicture || null);
+const profilePicture = computed(() => user.value?.profilePicture || null);
 const cropper = ref<InstanceType<typeof Cropper> | null>(null);
 
 const onFileChange = (event: Event) => {
@@ -46,9 +46,11 @@ const cropImage = async () => {
         const newProfilePicture = await uploadProfilePicture(file, isUpdate);
 
         if (newProfilePicture) {
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
+            console.log("✅ Nouvelle image enregistrée :", newProfilePicture);
+
+            if (user.value) {
+                user.value.profilePicture = newProfilePicture;
+            }
         }
     }, "image/jpeg");
 };

@@ -37,7 +37,6 @@ export default defineEventHandler(async (event) => {
     const fileName = `${sanitizedLastName}_${sanitizedFirstName}_pp${fileExtension}`;
     const filePath = `/uploads/profiles/${fileName}`;
     const fullFilePath = join(uploadDir, fileName);
-
     await fs.writeFile(fullFilePath, file.data);
 
     await pool.query(

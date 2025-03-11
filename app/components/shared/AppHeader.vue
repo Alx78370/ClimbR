@@ -49,10 +49,17 @@ const copyToClipboard = async () => {
             <div class="flex gap-5 items-center">
                 <div class="group relative flex flex-col gap-2 text-white" @mouseenter="showDropdown = true"
                     @mouseleave="showDropdown = false">
-                    <button v-if="loggedIn"
-                        class="flex items-center justify-center hover:underline underline-offset-4 border-x-2 border-t-2 border-transparent hover:cursor-pointer group-hover:border-x-2 group-hover:border-t-2 group-hover:pl-2 group-hover:border-neutral-900 rounded-t py-4">
-                        <Icon name="lucide:circle-user-round" class="text-4xl" />
-                        <Icon name="lucide:chevron-down" class="text-2xl" />
+                    <button v-if="loggedIn">
+                        <div v-if="!user?.profilePicture"
+                            class="flex items-center justify-center hover:underline underline-offset-4 border-x-2 border-t-2 border-transparent hover:cursor-pointer group-hover:border-x-2 group-hover:border-t-2 group-hover:pl-2 group-hover:border-neutral-900 rounded-t py-4">
+                            <Icon name="lucide:circle-user-round" class="text-4xl" />
+                            <Icon name="lucide:chevron-down" class="text-2xl" />
+                        </div>
+                        <div v-else
+                            class="flex items-center justify-center hover:underline underline-offset-4 border-x-2 border-t-2 border-transparent hover:cursor-pointer group-hover:border-x-2 group-hover:border-t-2 group-hover:pl-2 group-hover:border-neutral-900 rounded-t py-4">
+                            <img :src="user?.profilePicture" alt="profile picture" class="w-10 h-10 rounded-full" />
+                            <Icon name="lucide:chevron-down" class="text-2xl" />
+                        </div>
                     </button>
                     <div v-if="loggedIn && showDropdown"
                         class="absolute -bottom-[1.5px] left-0 h-[1.5px] w-full bg-neutral-950 border-x-2 border-neutral-900 z-10 mx-auto">
