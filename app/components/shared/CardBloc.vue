@@ -12,6 +12,7 @@ defineProps<{
         media?: string;
         first_name: string;
         last_name: string;
+        profile_picture?: string;
     };
     editable?: boolean;
 }>();
@@ -47,11 +48,19 @@ const blocTypeMap: Record<string, string> = {
 <template>
     <article class="flex flex-col bg-neutral-900 text-white w-full rounded p-5 gap-5">
         <div class="flex flex-col gap-5 w-full">
-            <div class="flex justify-between items-start w-full">
+            <div class="flex justify-between items-center w-full">
                 <div>
-                    <p class="font-semibold">{{ bloc.first_name + ' ' + bloc.last_name }}</p>
-                    <p class="text-sm text-gray-300 mb-5">Validé le {{ bloc.date_validation }} - {{ bloc.salle_name
-                        }}</p>
+                    <div class="flex items-start gap-3 h-12 mb-5">
+                        <img v-if="bloc.profile_picture" :src="`${bloc.profile_picture}`" alt="profile picture"
+                            class="w-12 h-12 rounded-full object-cover">
+                        <Icon v-else name="lucide:circle-user-round" class="text-5xl" />
+                        <div>
+                            <p class="font-semibold">{{ bloc.first_name + ' ' + bloc.last_name }}</p>
+                            <p class="text-sm text-gray-300 mb-5">
+                                Validé le {{ bloc.date_validation }} - {{ bloc.salle_name }}
+                            </p>
+                        </div>
+                    </div>
                     <p class="font-bold">{{ bloc.titre }}</p>
                     <p class="mb-5">{{ bloc.description }}</p>
 
