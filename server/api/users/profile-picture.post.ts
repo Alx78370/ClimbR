@@ -41,7 +41,6 @@ export default defineEventHandler(async (event) => {
 
       try {
         await fs.unlink(oldImagePath);
-        console.log("🗑️ Ancienne photo supprimée :", oldImagePath);
       } catch (error) {
         console.warn("⚠️ Impossible de supprimer l'ancienne photo :", error);
       }

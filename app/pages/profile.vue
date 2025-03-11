@@ -29,7 +29,7 @@ onMounted(async () => {
             :reject-request="rejectRequest" />
         <FriendsList v-if="activeTab === 'friends'" :friends="friends" />
 
-        <NuxtLink to="/" class="mt-6 text-orange-500 hover:underline text-lg">
+        <NuxtLink to="/" class="mt-20 text-orange-500 hover:underline text-lg">
             ← Retour à l'accueil
         </NuxtLink>
     </div>

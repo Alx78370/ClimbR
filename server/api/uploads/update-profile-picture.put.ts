@@ -38,12 +38,36 @@ export default defineEventHandler(async (event) => {
     const filePath = `/uploads/profiles/${fileName}`;
     const fullFilePath = join(uploadDir, fileName);
 
-    await fs.writeFile(fullFilePath, file.data);
+    const client = await pool.connect();
+    try {
+      const result = await client.query(
+        "SELECT profile_picture FROM users WHERE id = $1",
+        [session.user.id],
+      );
+      const oldProfilePicture = result.rows[0]?.profile_picture;
 
-    await pool.query(
-      "UPDATE users SET profile_picture = $1 WHERE id = $2 RETURNING profile_picture",
-      [filePath, session.user.id],
-    );
+      if (
+        oldProfilePicture &&
+        oldProfilePicture.startsWith("/uploads/profiles/")
+      ) {
+        const oldImagePath = join(process.cwd(), "public", oldProfilePicture);
+        try {
+          await fs.access(oldImagePath);
+          await fs.unlink(oldImagePath);
+        } catch {
+          // Intentionally ignored
+        }
+      }
+
+      await fs.writeFile(fullFilePath, file.data);
+
+      await client.query(
+        "UPDATE users SET profile_picture = $1 WHERE id = $2 RETURNING profile_picture",
+        [filePath, session.user.id],
+      );
+    } finally {
+      client.release();
+    }
 
     return { success: true, fileName, filePath };
   } catch {
