@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import { join, extname } from "path";
 import pool from "../../db";
+import crypto from "crypto";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -34,15 +35,25 @@ export default defineEventHandler(async (event) => {
       .replace(/\s+/g, "_")
       .replace(/[^a-zA-Z0-9_]/g, "");
     const fileExtension = extname(file.filename).toLowerCase();
-    const fileName = `${sanitizedLastName}_${sanitizedFirstName}_pp${fileExtension}`;
+    const uniqueHash = crypto.randomBytes(6).toString("hex");
+    const fileName = `${sanitizedLastName}_${sanitizedFirstName}_${uniqueHash}_pp${fileExtension}`;
     const filePath = `/uploads/profiles/${fileName}`;
     const fullFilePath = join(uploadDir, fileName);
     await fs.writeFile(fullFilePath, file.data);
 
+    // ✅ Mettre à jour la BDD
     await pool.query(
       "UPDATE users SET profile_picture = $1 WHERE id = $2 RETURNING profile_picture",
       [filePath, session.user.id],
     );
+
+    // ✅ Mettre à jour la session utilisateur
+    await setUserSession(event, {
+      user: {
+        ...session.user,
+        profilePicture: filePath, // 🔄 Met à jour immédiatement la session
+      },
+    });
 
     return { success: true, fileName, filePath };
   } catch {

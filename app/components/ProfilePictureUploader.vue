@@ -4,8 +4,7 @@ import "vue-advanced-cropper/dist/style.css";
 import { useProfilePicture } from "~/composables/useProfilePicture";
 
 const { uploadProfilePicture } = useProfilePicture();
-const { user } = useUserSession();
-
+const { user } = useUserSession(); // ❌ Supprime `fetch`
 const fileInput = ref<HTMLInputElement | null>(null);
 const image = ref<string | null>(null);
 const profilePicture = computed(() => user.value?.profilePicture || null);
@@ -48,19 +47,15 @@ const cropImage = async () => {
         if (newProfilePicture) {
             console.log("✅ Nouvelle image enregistrée :", newProfilePicture);
 
-            // ✅ Mettre à jour l'utilisateur
             if (user.value) {
                 user.value.profilePicture = newProfilePicture;
             }
 
-            // ✅ Cacher le Cropper après validation
             image.value = null;
         }
     }, "image/jpeg");
 };
-
 </script>
-
 
 <template>
     <div class="flex flex-col items-center">

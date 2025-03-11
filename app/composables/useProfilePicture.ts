@@ -1,5 +1,5 @@
 export function useProfilePicture() {
-  const { user, fetch: fetchUserSession } = useUserSession();
+  const { user } = useUserSession();
   const profilePicture = ref<string | null>(user.value?.profilePicture || null);
 
   async function uploadProfilePicture(file: File, isUpdate: boolean = false) {
@@ -19,9 +19,6 @@ export function useProfilePicture() {
 
       if (result.success && result.filePath) {
         profilePicture.value = result.filePath;
-
-        await fetchUserSession();
-
         return profilePicture.value;
       } else {
         throw new Error(result.error || "Erreur lors de l'upload du fichier");
