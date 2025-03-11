@@ -14,6 +14,7 @@ export default defineEventHandler(async (event): Promise<Bloc[]> => {
         u.username AS owner_username,
         u.first_name, 
         u.last_name, 
+        u.profile_picture,
         s.name AS salle_name,
         lower(TO_CHAR(b.date_validation, 'FMDD TMMonth YYYY')) AS date_validation,
         TO_CHAR(b.created_at, 'DD/MM/YYYY') AS created_at,
