@@ -43,6 +43,11 @@ const blocTypeMap: Record<string, string> = {
     arete: "Arête",
 };
 
+const capitalize = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+
 </script>
 
 <template>
@@ -55,7 +60,9 @@ const blocTypeMap: Record<string, string> = {
                             class="w-12 h-12 rounded-full object-cover">
                         <Icon v-else name="lucide:circle-user-round" class="text-5xl" />
                         <div>
-                            <p class="font-semibold">{{ bloc.first_name + ' ' + bloc.last_name }}</p>
+                            <p class="font-semibold">
+                                {{ capitalize(bloc.first_name) + ' ' + capitalize(bloc.last_name) }}
+                            </p>
                             <p class="text-sm text-gray-300 mb-5">
                                 Validé le {{ bloc.date_validation }} - {{ bloc.salle_name }}
                             </p>
