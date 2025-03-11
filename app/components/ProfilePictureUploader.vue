@@ -48,9 +48,13 @@ const cropImage = async () => {
         if (newProfilePicture) {
             console.log("✅ Nouvelle image enregistrée :", newProfilePicture);
 
+            // ✅ Mettre à jour l'utilisateur
             if (user.value) {
                 user.value.profilePicture = newProfilePicture;
             }
+
+            // ✅ Cacher le Cropper après validation
+            image.value = null;
         }
     }, "image/jpeg");
 };
