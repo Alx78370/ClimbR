@@ -13,9 +13,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const { profilePicture } = body;
+  const { profile_picture } = body;
 
-  if (!profilePicture) {
+  if (!profile_picture) {
     throw createError({
       statusCode: 400,
       statusMessage: "URL de la photo manquante",
@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
 
     // ✅ 3. Mettre à jour la BDD avec la nouvelle photo de profil
     await client.query("UPDATE users SET profile_picture = $1 WHERE id = $2", [
-      profilePicture,
+      profile_picture,
       session.user.id,
     ]);
 
@@ -56,11 +56,11 @@ export default defineEventHandler(async (event) => {
     await setUserSession(event, {
       user: {
         ...session.user,
-        profilePicture,
+        profile_picture,
       },
     });
 
-    return { success: true, profilePicture };
+    return { success: true, profile_picture };
   } catch (error) {
     console.error("❌ Erreur lors de la mise à jour de la photo :", error);
     throw createError({

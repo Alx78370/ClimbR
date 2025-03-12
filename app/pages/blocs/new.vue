@@ -32,7 +32,6 @@ const onFileChange = (event: Event) => {
     }
 };
 
-
 // Fonction pour recadrer l'image et la stocker
 const cropImage = async () => {
     if (!cropper.value) return;
@@ -167,7 +166,7 @@ onMounted(fetchSalles);
                 <br>
                 <input v-show="!image" ref="fileInput" type="file" accept="image/*"
                     class="flex items-center gap-2 cursor-pointer border-2 w-full border-white text-white p-2 rounded-lg file:hidden"
-                    @change="onFileChange" @click="console.log('📂 Clic détecté sur input file')">
+                    @change="onFileChange">
 
 
                 <!-- Affichage du Cropper une fois l'image sélectionnée -->

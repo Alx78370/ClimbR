@@ -3,6 +3,8 @@ import { useRoute } from "vue-router";
 import { useSalles } from "@/composables/useSalles";
 import { useBlocForm } from "@/composables/useBlocForm";
 import authMiddleware from "../../../middleware/auth";
+import { Cropper } from "vue-advanced-cropper";
+import "vue-advanced-cropper/dist/style.css";
 
 const route = useRoute();
 const blocId = route.params.id;
@@ -30,15 +32,50 @@ onMounted(async () => {
 
 const { salleId, essai, couleur, titre, type, description, date_validation, mediaFile, mediaFileName, selectedFileName, submitBloc } = useBlocForm(bloc);
 
-function handleFileChange(event: Event) {
+const fileInput = ref<HTMLInputElement | null>(null);
+const image = ref<string | null>(null);
+const croppedImage = ref<string | null>(null);
+const cropper = ref<InstanceType<typeof Cropper> | null>(null);
+
+const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    const file = target.files?.[0] || null;
+    const file = target.files?.[0];
 
     if (file) {
-        mediaFile.value = file;
         selectedFileName.value = file.name;
+        const reader = new FileReader();
+        reader.onload = () => {
+            image.value = reader.result as string;
+        };
+        reader.readAsDataURL(file);
     }
-}
+};
+
+// ✅ Fonction pour recadrer l'image
+const cropImage = async () => {
+    if (!cropper.value) return;
+
+    const result = cropper.value.getResult();
+    if (!result || !result.canvas) {
+        console.error("❌ Erreur : Impossible d'obtenir le canvas.");
+        return;
+    }
+
+    const { canvas } = result;
+
+    canvas.toBlob(async (blob: Blob | null) => {
+        if (blob) {
+            const file = new File([blob], "bloc_image.jpg", { type: "image/jpeg" });
+            croppedImage.value = URL.createObjectURL(blob);
+
+            // ✅ Mettre à jour mediaFile pour soumettre la nouvelle image
+            mediaFile.value = file;
+        }
+    }, "image/jpeg");
+
+    // ✅ Fermer le Cropper
+    image.value = null;
+};
 </script>
 
 <template>
@@ -142,21 +179,35 @@ function handleFileChange(event: Event) {
                 </select>
             </label>
 
-            <label>
+            <div>
                 Image :
-                <div class="flex items-center gap-2 cursor-pointer border-2 border-white text-white p-2 rounded-lg ">
-                    <div class="flex items-center gap-2">
-                        <Icon name="heroicons-solid:photograph" class="text-white text-2xl" />
-                        <p class="text-sm" :class="type ? 'text-white' : 'text-[#858585]'">
-                            {{ selectedFileName || (mediaFileName ? mediaFileName.split('/').pop() : "Aucune image") }}
-                        </p>
+                <br>
+                <!-- Affichage de l’image actuelle si elle existe -->
+                <img v-if="!image && mediaFileName" :src="mediaFileName" alt="Image du bloc"
+                    class="w-full h-[300px] object-cover rounded-lg" />
+
+                <!-- Input de fichier pour changer l'image -->
+                <input v-show="!image" ref="fileInput" type="file" accept="image/*"
+                    class="flex items-center gap-2 cursor-pointer border-2 w-full border-white text-white p-2 rounded-lg file:hidden"
+                    @change="onFileChange">
+
+                <!-- Recadrage de l'image -->
+                <div v-if="image" class="relative w-full h-[300px] flex flex-col items-center mb-16">
+                    <Cropper ref="cropper" :src="image" :stencil-props="{ aspectRatio: 1 }" class="cropper" />
+                    <div class="flex gap-4 mt-4">
+                        <button @click="cropImage" class="bg-orange-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+                            Valider
+                        </button>
+                        <button @click="image = null"
+                            class="bg-gray-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+                            Annuler
+                        </button>
                     </div>
-                    <input type="file" accept="image/*" class="hidden" @change="handleFileChange">
                 </div>
-            </label>
+            </div>
 
             <button type="submit"
-                class="bg-orange-500 p-3 rounded-2xl cursor-pointer font-bold hover:scale-105 hover:ease-in-out hover:duration-300 transition-all">
+                class="bg-orange-500 p-3 rounded-lg cursor-pointer font-bold hover:scale-105 hover:ease-in-out hover:duration-300 transition-all">
                 Mettre à jour
             </button>
         </form>
