@@ -53,8 +53,8 @@ const capitalize = (str: string) => {
 <template>
     <article class="flex flex-col bg-neutral-900 text-white w-full rounded p-5 gap-5">
         <div class="flex flex-col gap-5 w-full">
-            <div class="flex justify-between items-center w-full">
-                <div>
+            <div class="flex flex-col">
+                <div class="flex justify-between items-start w-full">
                     <div class="flex items-start gap-3 h-12 mb-5">
                         <img v-if="bloc.profile_picture" :src="`${bloc.profile_picture}`" alt="profile picture"
                             class="w-12 h-12 rounded-full object-cover">
@@ -68,37 +68,37 @@ const capitalize = (str: string) => {
                             </p>
                         </div>
                     </div>
-                    <p class="font-bold">{{ bloc.titre }}</p>
-                    <p class="mb-5">{{ bloc.description }}</p>
-
-                    <div class="flex gap-10">
-                        <div class="flex flex-col items-start">
-                            <p class="text-sm text-gray-300">Difficulté</p>
-                            <Icon name="icon-park-outline:dot" class="text-3xl" :class="colorClasses[bloc.couleur]" />
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-300">Type de bloc</p>
-                            <p>{{ blocTypeMap[bloc.type] }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-300">Nb d'essais</p>
-                            <div v-if="bloc.essai === 'Flash'" class="flex items-center gap-2">
-                                <p>{{ bloc.essai }}</p>
-                                <Icon name="typcn:flash" class="text-yellow-500" />
-                            </div>
-                            <p v-else>{{ bloc.essai }}</p>
-                        </div>
+                    <div v-if="editable" class="flex gap-5">
+                        <NuxtLink :to="`/blocs/${bloc.id}`">
+                            <Icon name="fa6-solid:pen-to-square"
+                                class="text-white text-2xl hover:scale-110 transition-all cursor-pointer" />
+                        </NuxtLink>
+                        <button @click="emit('delete', bloc.id)">
+                            <Icon name="ion:trash"
+                                class="text-white text-2xl hover:scale-110 transition-all cursor-pointer" />
+                        </button>
                     </div>
                 </div>
-                <div v-if="editable" class="flex gap-5">
-                    <NuxtLink :to="`/blocs/${bloc.id}`">
-                        <Icon name="fa6-solid:pen-to-square"
-                            class="text-white text-2xl hover:scale-110 transition-all cursor-pointer" />
-                    </NuxtLink>
-                    <button @click="emit('delete', bloc.id)">
-                        <Icon name="ion:trash"
-                            class="text-white text-2xl hover:scale-110 transition-all cursor-pointer" />
-                    </button>
+                <p class="font-bold">{{ bloc.titre }}</p>
+                <p class="mb-5">{{ bloc.description }}</p>
+
+                <div class="flex gap-10">
+                    <div class="flex flex-col items-start">
+                        <p class="text-sm text-gray-300">Difficulté</p>
+                        <Icon name="icon-park-outline:dot" class="text-3xl" :class="colorClasses[bloc.couleur]" />
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Type de bloc</p>
+                        <p>{{ blocTypeMap[bloc.type] }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Nb d'essais</p>
+                        <div v-if="bloc.essai === 'Flash'" class="flex items-center gap-2">
+                            <p>{{ bloc.essai }}</p>
+                            <Icon name="typcn:flash" class="text-yellow-500" />
+                        </div>
+                        <p v-else>{{ bloc.essai }}</p>
+                    </div>
                 </div>
             </div>
         </div>
