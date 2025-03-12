@@ -83,17 +83,3 @@ const cropImage = async () => {
         </div>
     </div>
 </template>
-
-
-<style scoped>
-.cropper-container {
-    width: 300px;
-    height: 300px;
-    position: relative;
-}
-
-.cropper {
-    width: 100%;
-    height: 100%;
-}
-</style>
