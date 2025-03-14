@@ -183,7 +183,7 @@ const cropImage = async () => {
                 Image :
                 <br>
                 <!-- Affichage de l’image actuelle si elle existe -->
-                <img v-if="!image && mediaFileName" :src="mediaFileName" alt="Image du bloc"
+                <img v-if="!image && mediaFileName" :src="`${mediaFileName}`" alt="Image du bloc"
                     class="w-full h-[300px] object-cover rounded-lg" />
 
                 <!-- Input de fichier pour changer l'image -->

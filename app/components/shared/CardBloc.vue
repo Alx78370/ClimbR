@@ -23,14 +23,14 @@ const emit = defineEmits<{
 }>();
 
 const colorClasses: { [key: string]: string } = {
-    jaune: "text-yellow-500",
-    orange: "text-orange-500",
-    vert: "text-green-500",
-    bleu: "text-blue-500",
-    rose: "text-pink-500",
-    rouge: "text-red-500",
-    noir: "text-black",
-    violet: "text-purple-500",
+    jaune: "bg-yellow-500",
+    orange: "bg-orange-500",
+    vert: "bg-green-500",
+    bleu: "bg-blue-500",
+    rose: "bg-pink-500",
+    rouge: "bg-red-500",
+    noir: "bg-black",
+    violet: "bg-purple-500",
 };
 
 const blocTypeMap: Record<string, string> = {
@@ -83,9 +83,10 @@ const capitalize = (str: string) => {
                 <p class="mb-5">{{ bloc.description }}</p>
 
                 <div class="flex gap-10">
-                    <div class="flex flex-col items-start">
+                    <div class="flex flex-col items-start gap-2">
                         <p class="text-sm text-gray-300">Difficulté</p>
-                        <Icon name="icon-park-outline:dot" class="text-3xl" :class="colorClasses[bloc.couleur]" />
+                        <div class="w-4 h-4 rounded-full border-2 border-white" :class="colorClasses[bloc.couleur]">
+                        </div>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Type de bloc</p>
@@ -102,7 +103,7 @@ const capitalize = (str: string) => {
                 </div>
             </div>
         </div>
-        <img :src="`/uploads/${bloc.media}`" :alt="`bloc ${bloc.couleur} à ${bloc.salle_name}`"
+        <img :src="`${bloc.media}`" :alt="`bloc ${bloc.couleur} à ${bloc.salle_name}`"
             class="w-full h-[500px] rounded object-cover" />
     </article>
 </template>

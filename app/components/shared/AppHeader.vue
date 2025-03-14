@@ -37,8 +37,6 @@ const copyToClipboard = async () => {
         console.error("Erreur lors de la copie :", err);
     }
 };
-
-console.log('user', user);
 </script>
 
 <template>

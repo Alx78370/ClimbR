@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
         date_validation,
         type,
         titre,
-        userSession.user.id, // Ajoute l'ID de l'utilisateur connecté
+        userSession.user.id,
       ],
     );
 
