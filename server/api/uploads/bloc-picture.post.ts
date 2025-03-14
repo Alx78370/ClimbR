@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
         const oldImagePath = join(
           process.cwd(),
           "public",
-          oldMedia.replace(/^\/uploads\//, ""),
+          oldMedia.startsWith("/uploads/") ? oldMedia.substring(1) : oldMedia,
         );
 
         try {

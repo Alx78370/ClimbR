@@ -4,11 +4,8 @@ export default defineEventHandler(async (event) => {
   const id = event.context.params?.id;
   const body = await readBody(event);
 
-  console.log("🛠 Mise à jour du bloc ID :", id);
-  console.log("📥 Données reçues :", body);
-
-  const { essai, couleur, description, media, date_validation, type, titre } =
-    body;
+  const { essai, description, media, date_validation, type, titre } = body;
+  const couleur = body.couleur ? body.couleur : "inconnu";
 
   if (!id) {
     return createError({
@@ -18,8 +15,6 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    console.log("🔍 Exécution de la requête SQL...");
-
     const { rows } = await pool.query(
       `
       UPDATE bloc
@@ -47,14 +42,12 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    console.log("✅ Bloc mis à jour avec succès :", rows[0]);
-
     return {
       success: true,
       bloc: rows[0],
     };
   } catch (error) {
-    console.error("❌ Erreur lors de la mise à jour du bloc :", error);
+    console.error("❌ Erreur lors de la mise à jour du bloc :", error as Error);
     return {
       success: false,
       error: `Erreur serveur : ${(error as Error).message}`,

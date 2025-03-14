@@ -44,7 +44,12 @@ export default defineEventHandler(async (event) => {
     }
 
     if (mediaPath) {
-      const fullPath = join(process.cwd(), "public/uploads", mediaPath);
+      const fullPath = join(
+        process.cwd(),
+        "public",
+        mediaPath.startsWith("/") ? mediaPath.substring(1) : mediaPath,
+      );
+
       try {
         await fs.unlink(fullPath);
         console.log(`Fichier supprimé : ${fullPath}`);
