@@ -65,7 +65,7 @@ onMounted(fetchSalles);
 <template>
     <div class="flex flex-col items-center text-white">
         <h1 class="text-2xl mb-5">Ajouter un nouveau bloc</h1>
-        <form class="flex flex-col gap-4 w-96" @submit.prevent="submitBloc">
+        <form class="flex flex-col gap-4 w-[600px] bg-neutral-900 p-5 rounded" @submit.prevent="submitBloc">
             <label>
                 Date de validation :
                 <br>
