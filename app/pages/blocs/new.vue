@@ -2,28 +2,62 @@
 import { useSalles } from '@/composables/useSalles';
 import { useBlocForm } from '@/composables/useBlocForm';
 import authMiddleware from "../../../middleware/auth";
+import { Cropper } from "vue-advanced-cropper";
+import "vue-advanced-cropper/dist/style.css";
 
 const { salles, fetchSalles } = useSalles();
 const bloc = ref(null);
 const { salleId, essai, couleur, titre, type, description, date_validation, mediaFile, submitBloc } = useBlocForm(bloc);
-
+const fileInput = ref<HTMLInputElement | null>(null);
+const image = ref<string | null>(null);
+const croppedImage = ref<string | null>(null);
+const cropper = ref<InstanceType<typeof Cropper> | null>(null);
 const selectedFileName = ref("");
 
 definePageMeta({
     middleware: [authMiddleware],
 });
 
-function handleFileChange(event: Event) {
+const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    const file = target.files?.[0] || null;
+    const file = target.files?.[0];
 
     if (file) {
-        mediaFile.value = file;
         selectedFileName.value = file.name;
+        const reader = new FileReader();
+        reader.onload = () => {
+            image.value = reader.result as string;
+        };
+        reader.readAsDataURL(file);
     }
-}
+};
 
+// Fonction pour recadrer l'image et la stocker
+const cropImage = async () => {
+    if (!cropper.value) return;
 
+    const result = cropper.value.getResult();
+    if (!result || !result.canvas) {
+        console.error("❌ Erreur : Impossible d'obtenir le canvas.");
+        return;
+    }
+
+    const { canvas } = result;
+
+    canvas.toBlob(async (blob: Blob | null) => {
+        if (blob) {
+            // Convertir en File pour l'upload
+            const file = new File([blob], "bloc_image.jpg", { type: "image/jpeg" });
+            croppedImage.value = URL.createObjectURL(blob);
+
+            // Mettre à jour mediaFile pour l'upload
+            mediaFile.value = file;
+        }
+    }, "image/jpeg");
+
+    // Fermer le Cropper
+    image.value = null;
+};
 
 onMounted(fetchSalles);
 </script>
@@ -127,20 +161,32 @@ onMounted(fetchSalles);
                 </select>
             </label>
 
-            <label>
+            <div>
                 Image :
-                <div class="flex items-center gap-2 cursor-pointer border-2 border-white text-white p-2 rounded-lg ">
-                    <div class="flex items-center gap-2">
-                        <Icon name="heroicons-solid:photograph" class="text-white text-2xl" />
-                        <p v-if="selectedFileName" class="text-sm text-white">{{ selectedFileName }}</p>
-                        <p v-else class="text-[#858585]">Choisir une image</p>
+                <br>
+                <input v-show="!image" ref="fileInput" type="file" accept="image/*"
+                    class="flex items-center gap-2 cursor-pointer border-2 w-full border-white text-white p-2 rounded-lg file:hidden"
+                    @change="onFileChange">
+
+
+                <!-- Affichage du Cropper une fois l'image sélectionnée -->
+                <div v-if="image" class="relative w-full h-[300px] flex flex-col items-center mb-16">
+                    <Cropper ref="cropper" :src="image" :stencil-props="{ aspectRatio: 1 }" class="cropper" />
+                    <div class="flex gap-4 mt-4">
+                        <button @click="cropImage" class="bg-orange-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+                            Valider
+                        </button>
+                        <button @click="image = null"
+                            class="bg-gray-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+                            Annuler
+                        </button>
                     </div>
-                    <input type="file" accept="image/*" class="hidden" @change="handleFileChange">
                 </div>
-            </label>
+            </div>
+
 
             <button type="submit"
-                class="bg-orange-500 p-3 rounded-2xl cursor-pointer font-bold hover:scale-105 hover:ease-in-out hover:duration-300 transition-all">Ajouter
+                class="bg-orange-500 p-3 rounded-lg cursor-pointer font-bold hover:scale-105 hover:ease-in-out hover:duration-300 transition-all">Ajouter
                 le
                 bloc</button>
         </form>

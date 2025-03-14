@@ -1,7 +1,6 @@
 import { useRouter } from "vue-router";
 import { useFileUpload } from "./useFileUpload";
 import type { Bloc } from "../../types/bloc";
-import { ref, watch } from "vue";
 
 export function useBlocForm(blocRef: Ref<Bloc | null>) {
   const router = useRouter();
@@ -23,7 +22,7 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
   const date_validation = ref("");
   const mediaFile = ref<File | null>(null);
   const selectedFileName = ref<string>("");
-  const { mediaFileName, uploadFile } = useFileUpload();
+  const { mediaFileName } = useFileUpload();
 
   watch(
     blocRef,
@@ -48,43 +47,72 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
   );
 
   async function submitBloc() {
-    if (mediaFile.value) {
-      const uploadedFileName = await uploadFile(mediaFile.value);
-      if (uploadedFileName) {
-        mediaFileName.value = uploadedFileName;
-      }
-    }
-
-    const blocData = {
-      salle_id: salleId.value,
-      essai: essai.value,
-      type: type.value,
-      couleur: couleur.value,
-      titre: titre.value,
-      description: description.value,
-      media: mediaFileName.value,
-      date_validation: date_validation.value,
-    };
-
     try {
+      let uploadedFileName = mediaFileName.value;
+      let blocId: number | null = blocRef.value ? blocRef.value.id : null;
+
+      const blocData = {
+        salle_id: salleId.value,
+        essai: essai.value,
+        type: type.value,
+        couleur: couleur.value,
+        titre: titre.value,
+        description: description.value,
+        media: null,
+        date_validation: date_validation.value,
+      };
+
       if (blocRef.value) {
         await $fetch<Bloc>(`/api/blocs/${blocRef.value.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: blocData,
         });
-        console.log("Bloc mis à jour avec succès !");
+        blocId = blocRef.value.id;
       } else {
-        await $fetch<Bloc>("/api/blocs", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: blocData,
-        });
-        console.log("Bloc ajouté avec succès !");
+        const newBloc = await $fetch<{ success: boolean; bloc: Bloc }>(
+          "/api/blocs",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: blocData,
+          },
+        );
+
+        if (!newBloc || !newBloc.bloc || !newBloc.bloc.id) {
+          return;
+        }
+
+        blocId = newBloc.bloc.id;
       }
+
+      if (mediaFile.value && blocId) {
+        const formData = new FormData();
+        formData.append("file", mediaFile.value);
+        formData.append("blocId", blocId.toString());
+
+        const response = await $fetch<{ success: boolean; filePath?: string }>(
+          "/api/uploads/bloc-picture",
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
+
+        if (response.success && response.filePath) {
+          uploadedFileName = response.filePath;
+
+          await $fetch(`/api/blocs/${blocId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: { media: uploadedFileName },
+          });
+        }
+      }
+
       router.push("/");
     } catch (err) {
-      console.error("Erreur :", err);
+      console.error("❌ Erreur :", err);
     }
   }
 

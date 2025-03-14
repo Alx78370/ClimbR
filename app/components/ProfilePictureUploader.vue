@@ -7,7 +7,7 @@ const { uploadProfilePicture } = useProfilePicture();
 const { user } = useUserSession(); // ❌ Supprime `fetch`
 const fileInput = ref<HTMLInputElement | null>(null);
 const image = ref<string | null>(null);
-const profilePicture = computed(() => user.value?.profilePicture || null);
+const profile_picture = computed(() => user.value?.profile_picture || null);
 const cropper = ref<InstanceType<typeof Cropper> | null>(null);
 
 const onFileChange = (event: Event) => {
@@ -40,7 +40,7 @@ const cropImage = async () => {
         }
 
         const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
-        const isUpdate = user.value?.profilePicture !== null;
+        const isUpdate = user.value?.profile_picture !== null;
 
         const newProfilePicture = await uploadProfilePicture(file, isUpdate);
 
@@ -48,7 +48,7 @@ const cropImage = async () => {
             console.log("✅ Nouvelle image enregistrée :", newProfilePicture);
 
             if (user.value) {
-                user.value.profilePicture = newProfilePicture;
+                user.value.profile_picture = newProfilePicture;
             }
 
             image.value = null;
@@ -63,7 +63,7 @@ const cropImage = async () => {
         <div class="group relative">
             <label for="fileInput"
                 class="cursor-pointer relative w-32 h-32 flex items-center justify-center rounded-full border-2 border-neutral-900 overflow-hidden mt-10">
-                <img v-if="profilePicture" :src="profilePicture" class="w-full h-full object-cover" />
+                <img v-if="profile_picture" :src="profile_picture" class="w-full h-full object-cover" />
                 <Icon v-else name="lucide:circle-user-round" class="text-gray-400 text-9xl" />
                 <input id="fileInput" type="file" accept="image/*" @change="onFileChange" class="hidden"
                     ref="fileInput" />
@@ -83,17 +83,3 @@ const cropImage = async () => {
         </div>
     </div>
 </template>
-
-
-<style scoped>
-.cropper-container {
-    width: 300px;
-    height: 300px;
-    position: relative;
-}
-
-.cropper {
-    width: 100%;
-    height: 100%;
-}
-</style>

@@ -50,14 +50,14 @@ const copyToClipboard = async () => {
                 <div class="group relative flex flex-col gap-2 text-white" @mouseenter="showDropdown = true"
                     @mouseleave="showDropdown = false">
                     <button v-if="loggedIn">
-                        <div v-if="!user?.profilePicture"
+                        <div v-if="!user?.profile_picture"
                             class="flex items-center justify-center hover:underline underline-offset-4 border-x-2 border-t-2 border-transparent hover:cursor-pointer group-hover:border-x-2 group-hover:border-t-2 group-hover:pl-2 group-hover:border-neutral-900 rounded-t py-4">
                             <Icon name="lucide:circle-user-round" class="text-4xl" />
                             <Icon name="lucide:chevron-down" class="text-2xl" />
                         </div>
                         <div v-else
                             class="flex items-center justify-center hover:underline underline-offset-4 border-x-2 border-t-2 border-transparent hover:cursor-pointer group-hover:border-x-2 group-hover:border-t-2 group-hover:pl-2 group-hover:border-neutral-900 rounded-t py-4">
-                            <img :src="user?.profilePicture" alt="profile picture" class="w-10 h-10 rounded-full" />
+                            <img :src="user?.profile_picture" alt="profile picture" class="w-10 h-10 rounded-full" />
                             <Icon name="lucide:chevron-down" class="text-2xl" />
                         </div>
                     </button>

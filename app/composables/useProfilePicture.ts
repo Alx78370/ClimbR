@@ -1,6 +1,8 @@
 export function useProfilePicture() {
   const { user } = useUserSession();
-  const profilePicture = ref<string | null>(user.value?.profilePicture || null);
+  const profile_picture = ref<string | null>(
+    user.value?.profile_picture || null,
+  );
 
   async function uploadProfilePicture(file: File, isUpdate: boolean = false) {
     const formData = new FormData();
@@ -18,8 +20,8 @@ export function useProfilePicture() {
       const result = await response.json();
 
       if (result.success && result.filePath) {
-        profilePicture.value = result.filePath;
-        return profilePicture.value;
+        profile_picture.value = result.filePath;
+        return profile_picture.value;
       } else {
         throw new Error(result.error || "Erreur lors de l'upload du fichier");
       }
@@ -30,7 +32,7 @@ export function useProfilePicture() {
   }
 
   return {
-    profilePicture,
+    profile_picture,
     uploadProfilePicture,
   };
 }

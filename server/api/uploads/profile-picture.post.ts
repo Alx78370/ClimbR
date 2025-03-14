@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
     await setUserSession(event, {
       user: {
         ...session.user,
-        profilePicture: filePath, // 🔄 Met à jour immédiatement la session
+        profile_picture: filePath, // 🔄 Met à jour immédiatement la session
       },
     });
 
