@@ -1,4 +1,11 @@
 <script setup lang="ts">
+
+const isCommenting = ref(false);
+const handleCommentSubmit = (comment: string) => {
+    console.log("Commentaire envoyé :", comment);
+    isCommenting.value = false;
+};
+
 defineProps<{
     bloc: {
         id: number;
@@ -106,8 +113,27 @@ const capitalize = (str: string) => {
         <img :src="`${bloc.media}`" :alt="`bloc ${bloc.couleur} à ${bloc.salle_name}`"
             class="w-full h-[500px] rounded object-cover" />
         <div class="flex justify-between items-center">
-            <LikeButton :bloc-id="bloc.id" />
+            <div class="flex items-start gap-3">
+                <LikeButton :bloc-id="bloc.id" />
+                <CommentButton :isCommenting="isCommenting" @toggle-comment="isCommenting = !isCommenting" />
+            </div>
             <LikeDisplay :bloc-id="bloc.id" />
         </div>
+        <Transition name="fade">
+            <CommentInput v-if="isCommenting" :bloc-id="bloc.id" @submit="handleCommentSubmit"
+                @cancel="isCommenting = false" />
+        </Transition>
     </article>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

@@ -13,9 +13,9 @@ const { userHasLiked, toggleLike } = useLike(props.blocId);
     <button @click="toggleLike" class="cursor-pointer relative">
         <Transition name="fade" mode="out-in">
             <Icon v-if="userHasLiked" key="liked" name="fa-solid:thumbs-up"
-                class="text-orange-500 text-2xl transition-transform transform scale-110 duration-300 ease-out" />
+                class="text-orange-500 text-2xl transition-transform transform duration-300 ease-out" />
             <Icon v-else key="unliked" name="fa-regular:thumbs-up"
-                class="text-white text-2xl transition-transform transform scale-100 duration-300 ease-in" />
+                class="text-white text-2xl transition-transform transform duration-300 ease-in" />
         </Transition>
     </button>
 </template>
