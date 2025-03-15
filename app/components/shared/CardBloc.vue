@@ -105,5 +105,8 @@ const capitalize = (str: string) => {
         </div>
         <img :src="`${bloc.media}`" :alt="`bloc ${bloc.couleur} à ${bloc.salle_name}`"
             class="w-full h-[500px] rounded object-cover" />
+        <div>
+            <LikeButton :bloc-id="bloc.id" />
+        </div>
     </article>
 </template>

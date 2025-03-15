@@ -1,4 +1,4 @@
-import pool from "../../db";
+import pool from "../../../db";
 import { promises as fs } from "fs";
 import { join } from "path";
 
