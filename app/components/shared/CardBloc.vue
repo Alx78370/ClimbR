@@ -51,7 +51,7 @@ const capitalize = (str: string) => {
 </script>
 
 <template>
-    <article class="flex flex-col bg-neutral-900 text-white w-full rounded p-2 gap-5">
+    <article class="flex flex-col bg-neutral-900 text-white w-full rounded p-5 gap-5">
         <div class="flex flex-col gap-5 w-full">
             <div class="flex flex-col">
                 <div class="flex justify-between items-start w-full">
