@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     const userId = userSession.user.id;
     const blocId = getRouterParam(event, "id");
 
-    // Récupérer le nombre de likes + état de l'utilisateur
+    // Récupérer le nombre de likes + état utilisateur
     const { rows } = await pool.query(
       `
       SELECT 
@@ -20,7 +20,11 @@ export default defineEventHandler(async (event) => {
       [userId, blocId],
     );
 
-    // Récupérer les utilisateurs ayant liké (limité aux 3 derniers pour l'affichage)
+    // ✅ Vérifie qu'il y a bien des likes avant d’accéder à `rows[0]`
+    const likeCount = rows.length ? parseInt(rows[0].like_count, 10) : 0;
+    const userHasLiked = rows.length ? rows[0].user_has_liked : false;
+
+    // Récupérer les 3 derniers utilisateurs ayant liké
     const { rows: likeList } = await pool.query(
       `
       SELECT u.id AS user_id, u.username, u.profile_picture
@@ -34,9 +38,9 @@ export default defineEventHandler(async (event) => {
     );
 
     return {
-      likeCount: parseInt(rows[0].like_count, 10),
-      userHasLiked: rows[0].user_has_liked,
-      likeList: likeList,
+      likeCount: likeCount,
+      userHasLiked: userHasLiked,
+      likeList: likeList ?? [],
     };
   } catch (error) {
     console.error("❌ Erreur lors de la récupération des likes :", error);

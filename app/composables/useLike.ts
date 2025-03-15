@@ -8,12 +8,13 @@ export const useLike = (blocId: number) => {
 
   const likeApiUrl = computed(() => `/api/blocs/${blocId}/likes`);
 
-  // Charger le nombre de likes + état de l'utilisateur
+  // Charger le nombre de likes + état de l'utilisateur + utilisateurs ayant liké
   const fetchLikes = async () => {
     try {
       const data = await $fetch<LikeResponse>(likeApiUrl.value);
       likes.value = data.likeCount;
       userHasLiked.value = data.userHasLiked;
+      likeList.value = data.likeList ?? [];
     } catch (err) {
       console.error("❌ Erreur lors du chargement des likes :", err);
     }
@@ -33,6 +34,8 @@ export const useLike = (blocId: number) => {
   const fetchLikeList = async () => {
     showLikesList.value = !showLikesList.value;
   };
+
+  watchEffect(fetchLikes);
 
   return {
     likes,
