@@ -4,7 +4,6 @@ const props = defineProps<{
     commentCount: number;
 }>();
 
-// ✅ Calcul du texte affiché (singulier/pluriel)
 const commentText = computed(() =>
     props.commentCount === 1 ? "1 commentaire" : `${props.commentCount} commentaires`
 );
