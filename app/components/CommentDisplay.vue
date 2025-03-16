@@ -3,12 +3,15 @@
 const props = defineProps<{
     blocId: number;
     commentCount: number;
+    customText?: string; // ✅ Texte personnalisé
+    hideIfEmpty?: boolean; // ✅ Masquer si `commentCount === 0`
+    minComments?: number; // ✅ Afficher seulement si `commentCount >= minComments`
 }>();
 
 const isModalOpen = ref(false);
 const { comments, fetchComments } = useComment(props.blocId);
 
-// ✅ Fonction pour ouvrir la modal et charger les commentaires
+// ✅ Ouvrir la modal et charger les commentaires
 const openModal = async () => {
     isModalOpen.value = true;
     if (comments.value.length === 0) {
@@ -26,10 +29,13 @@ const commentText = computed(() =>
 </script>
 
 <template>
-    <!-- ✅ Texte cliquable pour ouvrir la modal -->
-    <div v-if="commentCount > 0" class="flex items-center gap-1 text-white cursor-pointer hover:underline"
+    <!-- ✅ Conditions d'affichage -->
+    <div v-if="(!hideIfEmpty || commentCount > 0) && (!minComments || commentCount >= minComments)"
+        class="flex items-center gap-1 text-white cursor-pointer hover:text-orange-500 transition-all duration-300 ease-in-out text-sm"
         @click="openModal">
-        <span class="text-sm">{{ commentText }}</span>
+
+        <!-- ✅ Slot pour personnaliser l'affichage -->
+        <slot :comment-count="commentCount">{{ customText || commentText }}</slot>
     </div>
 
     <!-- ✅ Affichage du composant modal -->
