@@ -31,7 +31,8 @@ const handleCancel = () => {
 </script>
 
 <template>
-    <div v-if="isOpen" class="fixed inset-0 bg-neutral-950/80 flex items-center justify-center z-50">
+    <div v-if="isOpen" @click.self="closeModal"
+        class="fixed inset-0 bg-neutral-950/80 flex items-center justify-center z-50">
         <div class="bg-neutral-900 rounded-lg w-full max-w-2xl p-4 shadow-lg">
             <div class="flex justify-between items-center border-b pb-2">
                 <h2 class="text-lg font-semibold text-white">Commentaires</h2>
