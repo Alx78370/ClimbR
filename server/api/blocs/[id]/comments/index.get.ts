@@ -4,6 +4,13 @@ export default defineEventHandler(async (event) => {
   try {
     const blocId = getRouterParam(event, "id");
 
+    if (!blocId || isNaN(Number(blocId))) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "ID du bloc invalide",
+      });
+    }
+
     const { rows } = await pool.query(
       `
       SELECT c.id, c.content, c.created_at, 

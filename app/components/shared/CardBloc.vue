@@ -123,14 +123,16 @@ const capitalize = (str: string) => {
             <div class="flex items-center gap-2">
                 <LikeDisplay :bloc-id="bloc.id" />
                 <span v-if="commentCount > 0 && likeCount > 0" class="text-xl font-bold opacity-70">·</span>
-                <CommentDisplay :comment-count="commentCount" />
+                <CommentDisplay :bloc-id="bloc.id" :comment-count="commentCount" />
             </div>
 
         </div>
         <CommentSection :comments="comments" />
         <Transition name="fade">
-            <CommentInput v-if="isCommenting" :bloc-id="bloc.id" @submit="handleCommentSubmit"
+            <CommentInput v-if="isCommenting" :bloc-id="bloc.id" :autoClose="true" @submit="handleCommentSubmit"
                 @cancel="isCommenting = false" />
+
+
         </Transition>
     </article>
 </template>
