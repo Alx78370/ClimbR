@@ -6,12 +6,8 @@ export default defineEventHandler(async (event) => {
 
     const { rows } = await pool.query(
       `
-      SELECT 
-        c.id,
-        c.content,
-        c.created_at,
-        u.username,
-        u.profile_picture
+      SELECT c.id, c.content, c.created_at, 
+             u.first_name, u.last_name, u.profile_picture
       FROM comments c
       JOIN users u ON u.id = c.user_id
       WHERE c.bloc_id = $1

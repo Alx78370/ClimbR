@@ -1,12 +1,6 @@
 <script setup lang="ts">
 
-const isCommenting = ref(false);
-const handleCommentSubmit = (comment: string) => {
-    console.log("Commentaire envoyé :", comment);
-    isCommenting.value = false;
-};
-
-defineProps<{
+const props = defineProps<{
     bloc: {
         id: number;
         titre: string;
@@ -28,6 +22,14 @@ defineProps<{
 const emit = defineEmits<{
     (event: "delete", id: number): void;
 }>();
+
+const isCommenting = ref(false);
+const { comments } = useComment(props.bloc.id);
+
+const handleCommentSubmit = (comment: string) => {
+    console.log("Commentaire envoyé :", comment);
+    isCommenting.value = false;
+};
 
 const colorClasses: { [key: string]: string } = {
     jaune: "bg-yellow-500",
@@ -53,8 +55,6 @@ const blocTypeMap: Record<string, string> = {
 const capitalize = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
-
-
 </script>
 
 <template>
@@ -119,6 +119,7 @@ const capitalize = (str: string) => {
             </div>
             <LikeDisplay :bloc-id="bloc.id" />
         </div>
+        <CommentSection :comments="comments" />
         <Transition name="fade">
             <CommentInput v-if="isCommenting" :bloc-id="bloc.id" @submit="handleCommentSubmit"
                 @cancel="isCommenting = false" />
