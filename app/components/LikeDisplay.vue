@@ -27,7 +27,7 @@ const { likes, likeList } = useLike(props.blocId);
         <!-- ✅ Texte avec transition naturelle -->
         <div class="relative h-6 flex items-center">
             <Transition name="fade">
-                <span v-if="likes > 0" class="text-white block">
+                <span v-if="likes > 0" class="text-white block text-sm">
                     {{ likes }} {{ likes === 1 ? "j'aime" : "j'aimes" }}
                 </span>
             </Transition>

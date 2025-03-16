@@ -25,6 +25,9 @@ const emit = defineEmits<{
 
 const isCommenting = ref(false);
 const { comments } = useComment(props.bloc.id);
+const { likes } = useLike(props.bloc.id);
+const commentCount = computed(() => comments.value.length);
+const likeCount = computed(() => likes.value);
 
 const handleCommentSubmit = (comment: string) => {
     console.log("Commentaire envoyé :", comment);
@@ -117,7 +120,12 @@ const capitalize = (str: string) => {
                 <LikeButton :bloc-id="bloc.id" />
                 <CommentButton :isCommenting="isCommenting" @toggle-comment="isCommenting = !isCommenting" />
             </div>
-            <LikeDisplay :bloc-id="bloc.id" />
+            <div class="flex items-center gap-2">
+                <LikeDisplay :bloc-id="bloc.id" />
+                <span v-if="commentCount > 0 && likeCount > 0" class="text-xl font-bold opacity-70">·</span>
+                <CommentDisplay :comment-count="commentCount" />
+            </div>
+
         </div>
         <CommentSection :comments="comments" />
         <Transition name="fade">
