@@ -4,8 +4,10 @@ import { useTimeAgo } from "@vueuse/core";
 const props = defineProps<{
     blocId: number;
     blocTitle: string;
+    blocOwnerId: number;
     comments: {
         id: number;
+        user_id: number;
         content: string;
         created_at: string;
         first_name: string;
@@ -21,6 +23,7 @@ const props = defineProps<{
     }[];
     isOpen: boolean;
     fetchComments: () => Promise<void>;
+    deleteComment: (commentId: number) => Promise<void>;
     fetchLikes: () => Promise<void>;
     defaultTab: "comments" | "likes";
 }>();
@@ -70,16 +73,9 @@ const handleTabChange = (tab: "comments" | "likes") => {
 const handleSendFriendRequest = async (friendUsername: string) => {
     if (!user.value) return;
 
-    console.log("📩 Envoi de la demande d'ami à :", friendUsername);
-
     await sendFriendRequest(user.value.id, friendUsername);
-    await fetchFriendshipStatus(user.value.id); // ✅ Met à jour la liste des amis
-
-    console.log("✅ Demande envoyée, amis mis à jour !");
+    await fetchFriendshipStatus(user.value.id);
 };
-
-
-
 </script>
 
 <template>
@@ -131,7 +127,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
 
                 <div v-if="activeTab === 'comments'">
                     <div v-for="comment in comments" :key="comment.id"
-                        class="flex items-start gap-3 border-b border-neutral-800 pb-2 pr-3">
+                        class="group flex items-start gap-3 border-b border-neutral-800 pb-2 pr-3">
                         <img v-if="comment.profile_picture" :src="comment.profile_picture" alt="profile"
                             class="w-8 h-8 rounded-full border border-neutral-900">
                         <Icon v-else name="lucide:circle-user-round" class="text-4xl text-gray-500" />
@@ -142,9 +138,15 @@ const handleSendFriendRequest = async (friendUsername: string) => {
                             </p>
                             <p class="mt-1 text-sm text-gray-300">{{ comment.content }}</p>
                         </div>
-                        <p class="text-xs text-gray-500">
-                            {{ useTimeAgo(new Date(comment.created_at), { updateInterval: 60000 }) }}
-                        </p>
+                        <div class="flex items-center gap-2">
+                            <p class="text-xs text-gray-500">
+                                {{ useTimeAgo(new Date(comment.created_at), { updateInterval: 60000 }) }}
+                            </p>
+                            <DeleteCommentButton
+                                :can-delete="!!user && (user.id === comment.user_id || user.id === blocOwnerId)"
+                                :on-delete="() => deleteComment(comment.id)" />
+                        </div>
+
                     </div>
                 </div>
             </div>

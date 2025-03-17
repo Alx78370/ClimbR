@@ -10,18 +10,22 @@ export const useComment = (blocId: number) => {
     try {
       const data = await $fetch<Comment[]>(`/api/blocs/${blocId}/comments`);
 
-      // ✅ Vérifie si les données reçues contiennent les bons champs
       if (
-        data.every(
-          (c) => "first_name" in c && "last_name" in c && "content" in c,
+        !data.every(
+          (c) =>
+            "user_id" in c &&
+            "first_name" in c &&
+            "last_name" in c &&
+            "content" in c,
         )
       ) {
-        comments.value = data;
-      } else {
         console.error(
-          "❌ Erreur : Les commentaires ne contiennent pas les bons champs !",
+          "❌ Erreur : Certains commentaires ne contiennent pas tous les champs requis !",
         );
+        return;
       }
+
+      comments.value = data;
     } catch (err) {
       console.error("❌ Erreur lors du chargement des commentaires :", err);
     }
@@ -49,7 +53,27 @@ export const useComment = (blocId: number) => {
     }
   };
 
+  const deleteComment = async (commentId: number) => {
+    try {
+      await $fetch(`/api/blocs/${blocId}/comments/${commentId}`, {
+        method: "DELETE",
+      });
+      comments.value = comments.value.filter(
+        (comment) => comment.id !== commentId,
+      );
+    } catch (err) {
+      console.error("❌ Erreur lors de la suppression du commentaire :", err);
+    }
+  };
+
   fetchComments();
 
-  return { comments, submitComment, isLoading, errorMessage, fetchComments };
+  return {
+    comments,
+    submitComment,
+    isLoading,
+    errorMessage,
+    fetchComments,
+    deleteComment,
+  };
 };

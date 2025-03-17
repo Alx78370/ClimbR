@@ -2,11 +2,12 @@
 interface Props {
     blocId: number;
     blocTitle: string;
+    blocOwnerId: number;
 }
 
 const props = defineProps<Props>();
 const { likes, likeList, fetchLikes, likePreview } = useLike(props.blocId);
-const { comments, fetchComments } = useComment(props.blocId);
+const { comments, fetchComments, deleteComment } = useComment(props.blocId);
 
 // ✅ État du modal
 const isModalOpen = ref(false);
@@ -46,6 +47,7 @@ const closeModal = () => {
     </div>
 
     <!-- ✅ Affichage du modal -->
-    <BlocModal :bloc-id="blocId" :bloc-title="blocTitle" :comments="comments" :likes="likeList" :isOpen="isModalOpen"
-        :fetch-comments="fetchComments" :fetch-likes="fetchLikes" :default-tab="'likes'" @close="closeModal" />
+    <BlocModal :bloc-id="blocId" :bloc-title="blocTitle" :comments="comments" :bloc-owner-id="blocOwnerId"
+        :likes="likeList" :isOpen="isModalOpen" :fetch-comments="fetchComments" :fetch-likes="fetchLikes"
+        :delete-comment="deleteComment" :default-tab="'likes'" @close="closeModal" />
 </template>

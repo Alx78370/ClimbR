@@ -95,8 +95,6 @@ export function useFriends() {
         statuses: { id: number; status: "none" | "pending" | "accepted" }[];
       }>(`/api/friends/status/${userId}`);
 
-      console.log("🎯 Statuts d'amitié mis à jour :", response.statuses);
-
       // ✅ Transformer en un objet `{ userId: status }` pour accès rapide
       friendshipStatus.value = response.statuses.reduce(
         (acc, friend) => {

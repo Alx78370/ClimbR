@@ -3,6 +3,7 @@
 const props = defineProps<{
     bloc: {
         id: number;
+        user_id: number;
         titre: string;
         description?: string;
         couleur: string;
@@ -26,6 +27,7 @@ const emit = defineEmits<{
 const isCommenting = ref(false);
 const { comments } = useComment(props.bloc.id);
 const { likes } = useLike(props.bloc.id);
+const { deleteComment } = useComment(props.bloc.id);
 const commentCount = computed(() => comments.value.length);
 const likeCount = computed(() => likes.value);
 
@@ -121,14 +123,15 @@ const capitalize = (str: string) => {
                 <CommentButton :isCommenting="isCommenting" @toggle-comment="isCommenting = !isCommenting" />
             </div>
             <div class="flex items-center gap-2">
-                <LikeDisplay :bloc-id="bloc.id" :bloc-title="bloc.titre" />
+                <LikeDisplay :bloc-id="bloc.id" :bloc-title="bloc.titre" :bloc-owner-id="bloc.user_id" />
                 <span v-if="commentCount > 0 && likeCount > 0" class="text-xl font-bold opacity-70">·</span>
-                <CommentDisplay :bloc-id="bloc.id" :bloc-title="bloc.titre" :comment-count="commentCount"
-                    hide-if-empty />
+                <CommentDisplay :bloc-id="bloc.id" :bloc-title="bloc.titre" :bloc-owner-id="bloc.user_id"
+                    :comment-count="commentCount" hide-if-empty />
             </div>
         </div>
-        <CommentSection :comments="comments" />
-        <CommentDisplay :bloc-id="bloc.id" :bloc-title="bloc.titre" :comment-count="commentCount" :min-comments="3">
+        <CommentSection :comments="comments" :bloc-owner-id="bloc.user_id" :delete-comment="deleteComment" />
+        <CommentDisplay :bloc-id="bloc.id" :bloc-title="bloc.titre" :bloc-owner-id="bloc.user_id"
+            :comment-count="commentCount" :min-comments="3">
             Voir les {{ commentCount }} commentaires
         </CommentDisplay>
         <Transition name="fade">
