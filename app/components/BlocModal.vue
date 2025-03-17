@@ -154,7 +154,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
                     @cancel="() => { }" />
             </div>
             <div v-else class="pt-3">
-                <LikeButton :bloc-id="blocId" />
+                <SendLikeButton :bloc-id="blocId" />
             </div>
         </div>
     </div>

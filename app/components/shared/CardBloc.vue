@@ -117,7 +117,7 @@ const capitalize = (str: string) => {
             class="w-full h-[500px] rounded object-cover" />
         <div class="flex justify-between items-center">
             <div class="flex items-start gap-3">
-                <LikeButton :bloc-id="bloc.id" />
+                <LikeToggleButton :bloc-id="bloc.id" />
                 <CommentButton :isCommenting="isCommenting" @toggle-comment="isCommenting = !isCommenting" />
             </div>
             <div class="flex items-center gap-2">
