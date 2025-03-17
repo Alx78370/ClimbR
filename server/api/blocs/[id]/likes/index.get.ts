@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     const userId = userSession.user.id;
     const blocId = getRouterParam(event, "id");
 
-    // Récupérer le nombre de likes + état utilisateur
+    // ✅ Récupérer le nombre de likes + état utilisateur
     const { rows } = await pool.query(
       `
       SELECT 
@@ -20,14 +20,18 @@ export default defineEventHandler(async (event) => {
       [userId, blocId],
     );
 
-    // ✅ Vérifie qu'il y a bien des likes avant d’accéder à `rows[0]`
     const likeCount = rows.length ? parseInt(rows[0].like_count, 10) : 0;
     const userHasLiked = rows.length ? rows[0].user_has_liked : false;
 
-    // Récupérer les 3 derniers utilisateurs ayant liké
-    const { rows: likeList } = await pool.query(
+    // ✅ Récupérer **seulement 3 utilisateurs** pour l'affichage des avatars
+    const { rows: likePreview } = await pool.query(
       `
-      SELECT u.id AS user_id, u.username, u.profile_picture
+      SELECT 
+        u.id AS user_id, 
+        u.username, 
+        u.first_name, 
+        u.last_name, 
+        u.profile_picture
       FROM likes l
       JOIN users u ON u.id = l.user_id
       WHERE l.bloc_id = $1
@@ -37,9 +41,27 @@ export default defineEventHandler(async (event) => {
       [blocId],
     );
 
+    // ✅ Récupérer **tous les utilisateurs** pour l'affichage dans le modal
+    const { rows: likeList } = await pool.query(
+      `
+      SELECT 
+        u.id AS user_id, 
+        u.username,  
+        u.first_name, 
+        u.last_name, 
+        u.profile_picture
+      FROM likes l
+      JOIN users u ON u.id = l.user_id
+      WHERE l.bloc_id = $1
+      ORDER BY l.created_at DESC;
+      `,
+      [blocId],
+    );
+
     return {
-      likeCount: likeCount,
-      userHasLiked: userHasLiked,
+      likeCount,
+      userHasLiked,
+      likePreview: likePreview ?? [],
       likeList: likeList ?? [],
     };
   } catch (error) {

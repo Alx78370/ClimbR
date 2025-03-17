@@ -3,15 +3,29 @@ import type { Friend, FriendRequest, ApiResponse } from "../../types/friend";
 export function useFriends() {
   const requests = ref<FriendRequest[]>([]);
   const friends = ref<Friend[]>([]);
+  const friendshipStatus = ref<Record<number, "none" | "pending" | "accepted">>(
+    {},
+  );
   const message = ref<string>("");
+
+  // ✅ Vérifier le statut d'amitié (retourne 'none', 'pending', ou 'accepted')
+  const getFriendshipStatus = (
+    userId: number,
+  ): "none" | "pending" | "accepted" => {
+    return friendshipStatus.value[userId] || "none";
+  };
 
   // Envoyer une demande d'ami
   const sendFriendRequest = async (
     userId: number,
     friendUsername: string,
   ): Promise<void> => {
-    if (!friendUsername) {
-      message.value = "Veuillez entrer un pseudo.";
+    if (!userId || !friendUsername) {
+      console.error("Erreur : userId ou friendUsername est manquant", {
+        userId,
+        friendUsername,
+      });
+      message.value = "Erreur : données manquantes.";
       return;
     }
 
@@ -74,15 +88,41 @@ export function useFriends() {
     }
   };
 
+  // ✅ Récupérer les statuts d'amitié pour l'utilisateur connecté
+  const fetchFriendshipStatus = async (userId: number): Promise<void> => {
+    try {
+      const response = await $fetch<{
+        statuses: { id: number; status: "none" | "pending" | "accepted" }[];
+      }>(`/api/friends/status/${userId}`);
+
+      console.log("🎯 Statuts d'amitié mis à jour :", response.statuses);
+
+      // ✅ Transformer en un objet `{ userId: status }` pour accès rapide
+      friendshipStatus.value = response.statuses.reduce(
+        (acc, friend) => {
+          acc[friend.id] = friend.status;
+          return acc;
+        },
+        {} as Record<number, "none" | "pending" | "accepted">,
+      );
+    } catch (error) {
+      console.error(
+        "❌ Erreur lors du chargement des statuts d'amitié :",
+        error,
+      );
+    }
+  };
+
   // Récupérer la liste des amis
   const fetchFriends = async (userId: number): Promise<void> => {
     try {
-      const response = await $fetch<{ friends: Friend[] }>(
-        `/api/friends/${userId}`,
-      );
+      const response = await $fetch<{
+        friends: { id: number; username: string }[];
+      }>(`/api/friends/${userId}`);
+
       friends.value = response.friends;
     } catch (error) {
-      console.error("Erreur lors du chargement des amis :", error);
+      console.error("❌ Erreur lors du chargement des amis :", error);
     }
   };
 
@@ -90,7 +130,9 @@ export function useFriends() {
     requests,
     friends,
     message,
+    getFriendshipStatus,
     sendFriendRequest,
+    fetchFriendshipStatus,
     fetchRequests,
     acceptRequest,
     rejectRequest,

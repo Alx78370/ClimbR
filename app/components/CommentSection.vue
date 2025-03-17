@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTimeAgo } from "@vueuse/core";
+import { capitalize } from "vue";
 
 const props = defineProps<{
     comments: {
@@ -19,12 +20,6 @@ const formattedComments = computed(() =>
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 2)
 );
-
-
-// ✅ Fonction pour capitaliser les noms
-const capitalize = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
 </script>
 
 <template>

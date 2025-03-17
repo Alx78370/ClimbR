@@ -4,6 +4,8 @@ export const useLike = (blocId: number) => {
   const likes = useState<number>(`likes-${blocId}`, () => 0);
   const userHasLiked = useState<boolean>(`userHasLiked-${blocId}`, () => false);
   const likeList = useState<Like[]>(`likeList-${blocId}`, () => []);
+  const likePreview = useState<Like[]>(`likePreview-${blocId}`, () => []);
+
   const { user } = useUserSession();
 
   const likeApiUrl = computed(() => `/api/blocs/${blocId}/likes`);
@@ -14,7 +16,26 @@ export const useLike = (blocId: number) => {
       const data = await $fetch<LikeResponse>(likeApiUrl.value);
       likes.value = data.likeCount;
       userHasLiked.value = data.userHasLiked;
-      likeList.value = data.likeList ?? [];
+
+      // ✅ Limite à 3 pour les avatars
+      likePreview.value =
+        data.likePreview.map((like) => ({
+          user_id: like.user_id,
+          username: like.username,
+          first_name: like.first_name,
+          last_name: like.last_name,
+          profile_picture: like.profile_picture || "",
+        })) ?? [];
+
+      // ✅ Garde tous les utilisateurs pour le modal
+      likeList.value =
+        data.likeList.map((like) => ({
+          user_id: like.user_id,
+          username: like.username,
+          first_name: like.first_name,
+          last_name: like.last_name,
+          profile_picture: like.profile_picture || "",
+        })) ?? [];
     } catch (err) {
       console.error("❌ Erreur lors du chargement des likes :", err);
     }
@@ -32,6 +53,8 @@ export const useLike = (blocId: number) => {
           likeList.value.push({
             user_id: user.value.id,
             username: user.value.username,
+            first_name: user.value.first_name,
+            last_name: user.value.last_name,
             profile_picture: user.value.profile_picture || "",
           });
         }
@@ -56,6 +79,8 @@ export const useLike = (blocId: number) => {
     likes,
     userHasLiked,
     likeList,
+    likePreview,
     toggleLike,
+    fetchLikes,
   };
 };

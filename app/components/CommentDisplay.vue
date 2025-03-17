@@ -2,6 +2,7 @@
 
 const props = defineProps<{
     blocId: number;
+    blocTitle: string;
     commentCount: number;
     customText?: string; // ✅ Texte personnalisé
     hideIfEmpty?: boolean; // ✅ Masquer si `commentCount === 0`
@@ -10,6 +11,7 @@ const props = defineProps<{
 
 const isModalOpen = ref(false);
 const { comments, fetchComments } = useComment(props.blocId);
+const { likeList, fetchLikes } = useLike(props.blocId);
 
 // ✅ Ouvrir la modal et charger les commentaires
 const openModal = async () => {
@@ -39,6 +41,6 @@ const commentText = computed(() =>
     </div>
 
     <!-- ✅ Affichage du composant modal -->
-    <CommentModal :comments="comments" :is-open="isModalOpen" :bloc-id="blocId" :fetch-comments="fetchComments"
-        @close="closeModal" />
+    <BlocModal :comments="comments" :likes="likeList" :is-open="isModalOpen" :bloc-id="blocId" :bloc-title="blocTitle"
+        :fetch-comments="fetchComments" :fetch-likes="fetchLikes" :default-tab="'comments'" @close="closeModal" />
 </template>
