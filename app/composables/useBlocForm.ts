@@ -19,7 +19,7 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
   const couleur = ref("");
   const titre = ref("");
   const description = ref("");
-  const date_validation = ref("");
+  const date_validation = ref(new Date().toISOString().split("T")[0]);
   const mediaFile = ref<File | null>(null);
   const selectedFileName = ref<string>("");
   const { mediaFileName } = useFileUpload();
@@ -59,7 +59,8 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
         titre: titre.value,
         description: description.value,
         media: null,
-        date_validation: date_validation.value,
+        date_validation:
+          date_validation.value || new Date().toISOString().split("T")[0],
       };
 
       if (blocRef.value) {
