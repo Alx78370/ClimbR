@@ -112,7 +112,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
                         <div class="flex items-center gap-3">
                             <img v-if="like.profile_picture" :src="like.profile_picture" alt="profile"
                                 class="w-8 h-8 rounded-full border border-neutral-900">
-                            <Icon v-else name="lucide:circle-user-round" class="w-8 h-8 text-gray-500" />
+                            <Icon v-else name="lucide:circle-user-round" class="text-4xl text-gray-500" />
 
                             <p class="text-sm text-white">{{ like.first_name }} {{ like.last_name }}</p>
                         </div>
@@ -134,7 +134,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
                         class="flex items-start gap-3 border-b border-neutral-800 pb-2 pr-3">
                         <img v-if="comment.profile_picture" :src="comment.profile_picture" alt="profile"
                             class="w-8 h-8 rounded-full border border-neutral-900">
-                        <Icon v-else name="lucide:circle-user-round" class="w-8 h-8 text-gray-500" />
+                        <Icon v-else name="lucide:circle-user-round" class="text-4xl text-gray-500" />
 
                         <div class="flex-1">
                             <p class="text-sm font-semibold text-white">

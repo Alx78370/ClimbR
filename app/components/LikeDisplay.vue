@@ -30,7 +30,7 @@ const closeModal = () => {
                     class="w-6 h-6 rounded-full border-2 border-neutral-900 transition-opacity duration-300" />
                 <div v-else
                     class="w-6 h-6 flex items-center justify-center rounded-full bg-neutral-700 border-2 border-neutral-900 transition-opacity duration-300">
-                    <Icon name="lucide:circle-user-round" class="text-white text-xs" />
+                    <Icon name="lucide:circle-user-round" class="text-white text-4xl" />
                 </div>
             </template>
         </TransitionGroup>

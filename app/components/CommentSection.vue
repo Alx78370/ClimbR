@@ -27,7 +27,7 @@ const formattedComments = computed(() =>
         <div v-for="comment in formattedComments" :key="comment.id" class="flex items-start gap-3">
             <img v-if="comment.profile_picture" :src="comment.profile_picture" alt="profile"
                 class="w-8 h-8 rounded-full border border-neutral-900">
-            <Icon v-else name="lucide:circle-user-round" class="w-8 h-8 text-white" />
+            <Icon v-else name="lucide:circle-user-round" class="text-4xl text-white" />
 
             <div class="flex-1">
                 <div class="flex justify-between">
