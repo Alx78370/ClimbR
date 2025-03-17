@@ -44,7 +44,12 @@ export default defineEventHandler(async (event) => {
       const oldMedia = result.rows[0]?.media;
 
       if (oldMedia && oldMedia.startsWith("/uploads/blocs/")) {
-        const oldImagePath = join(process.cwd(), "public", oldMedia);
+        const oldImagePath = join(
+          process.cwd(),
+          "public",
+          oldMedia.startsWith("/uploads/") ? oldMedia.substring(1) : oldMedia,
+        );
+
         try {
           await fs.access(oldImagePath);
           await fs.unlink(oldImagePath);
