@@ -33,7 +33,9 @@ export function useBlocs() {
     try {
       const response = await $fetch<{ success: boolean; message?: string }>(
         `/api/blocs/${id}`,
-        { method: "DELETE" },
+        {
+          method: "DELETE",
+        },
       );
 
       if (response.success) {

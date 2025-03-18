@@ -4,7 +4,7 @@ import authMiddleware from "../../middleware/auth";
 import CardBloc from "../components/shared/CardBloc.vue";
 
 definePageMeta({
-    middleware: [authMiddleware],
+  middleware: [authMiddleware],
 });
 
 const { blocs, fetchBlocs, isLoading } = useBlocs();
@@ -13,24 +13,37 @@ onMounted(fetchBlocs);
 </script>
 
 <template>
-    <div v-if="isLoading" class="flex h-screen justify-center items-center">
-        <p class="text-white text-xl">Chargement...</p>
-    </div>
+  <div v-if="isLoading" class="flex h-screen items-center justify-center">
+    <p class="text-xl text-white">Chargement...</p>
+  </div>
 
-    <div v-else-if="blocs.length === 0" class="flex h-[90vh] -mt-20">
-        <img src="/images/cover1.webp" class="w-[40%] h-full object-cover">
-        <div class="flex flex-col items-center justify-center w-[20%] h-full bg-neutral-950 px-5">
-            <h1 class="text-white text-3xl text-center">
-                Commencer à suivre votre progression en ajoutant votre dernier bloc validé !
-            </h1>
-            <NuxtLink to="/blocs/new"
-                class="bg-orange-500 text-white py-2 px-5 rounded-md hover:scale-105 transition-all duration-200 ease-in-out cursor-pointer mt-5">
-                Ajouter un bloc
-            </NuxtLink>
-        </div>
-        <img src="/images/cover2.webp" class="w-[40%] h-full object-cover">
+  <div v-else-if="blocs.length === 0" class="-mt-20 flex h-[90vh]">
+    <img src="/images/cover1.webp" class="h-full w-[40%] object-cover" />
+    <div
+      class="flex h-full w-[20%] flex-col items-center justify-center bg-neutral-950 px-5"
+    >
+      <h1 class="text-center text-3xl text-white">
+        Commencer à suivre votre progression en ajoutant votre dernier bloc
+        validé !
+      </h1>
+      <NuxtLink
+        to="/blocs/new"
+        class="mt-5 cursor-pointer rounded-md bg-orange-500 px-5 py-2 text-white transition-all duration-200 ease-in-out hover:scale-105"
+      >
+        Ajouter un bloc
+      </NuxtLink>
     </div>
-    <div v-else class="flex flex-col w-[30%] md:mx-auto justify-center items-center gap-5">
-        <CardBloc v-for="bloc in blocs" :key="bloc.id" :bloc="bloc" :editable="false" />
-    </div>
+    <img src="/images/cover2.webp" class="h-full w-[40%] object-cover" />
+  </div>
+  <div
+    v-else
+    class="flex w-[30%] flex-col items-center justify-center gap-5 md:mx-auto"
+  >
+    <CardBloc
+      v-for="bloc in blocs"
+      :key="bloc.id"
+      :bloc="bloc"
+      :editable="false"
+    />
+  </div>
 </template>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 const props = defineProps<{
-    blocId: number;
-    autoClose?: boolean;
+  blocId: number;
+  autoClose?: boolean;
 }>();
 
 const emit = defineEmits<{
-    (event: "submit", comment: string): void;
-    (event: "cancel"): void;
+  (event: "submit", comment: string): void;
+  (event: "cancel"): void;
 }>();
 
 const comment = ref("");
@@ -14,35 +14,44 @@ const comment = ref("");
 const { submitComment, isLoading, errorMessage } = useComment(props.blocId);
 
 const handleSubmit = async () => {
-    if (!comment.value.trim()) return;
+  if (!comment.value.trim()) return;
 
-    await submitComment(comment.value);
-    emit("submit", comment.value);
-    comment.value = "";
+  await submitComment(comment.value);
+  emit("submit", comment.value);
+  comment.value = "";
 
-    if (props.autoClose) {
-        emit("cancel");
-    }
+  if (props.autoClose) {
+    emit("cancel");
+  }
 };
 
 const handleCancel = () => {
-    comment.value = "";
-    emit("cancel");
+  comment.value = "";
+  emit("cancel");
 };
 </script>
 
 <template>
-    <div class="p-3 bg-neutral-800 rounded shadow-md">
-        <textarea v-model="comment" placeholder="Écrire un commentaire..."
-            class="w-full p-2 rounded bg-neutral-700 text-white focus:outline-none"></textarea>
+  <div class="rounded bg-neutral-800 p-3 shadow-md">
+    <textarea
+      v-model="comment"
+      placeholder="Écrire un commentaire..."
+      class="w-full rounded bg-neutral-700 p-2 text-white focus:outline-none"
+    ></textarea>
 
-        <p v-if="errorMessage" class="text-red-500 text-sm">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
 
-        <div class="flex justify-end gap-2 mt-2">
-            <button @click="handleCancel" class="text-gray-300 cursor-pointer">Annuler</button>
-            <button @click="handleSubmit" :disabled="isLoading" class="text-orange-500 cursor-pointer">
-                {{ isLoading ? "Envoi..." : "Envoyer" }}
-            </button>
-        </div>
+    <div class="mt-2 flex justify-end gap-2">
+      <button class="cursor-pointer text-gray-300" @click="handleCancel">
+        Annuler
+      </button>
+      <button
+        :disabled="isLoading"
+        class="cursor-pointer text-orange-500"
+        @click="handleSubmit"
+      >
+        {{ isLoading ? "Envoi..." : "Envoyer" }}
+      </button>
     </div>
+  </div>
 </template>
