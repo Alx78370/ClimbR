@@ -12,9 +12,9 @@ export default withNuxt().prepend(
         "error",
         {
           html: {
-            void: "any", // ✅ Accepte <img> et <br> avec ou sans />
-            normal: "never", // ✅ Pas de self-closing sur les balises normales
-            component: "always", // ✅ Les composants Vue doivent être self-closing
+            void: "any",
+            normal: "never",
+            component: "always",
           },
           svg: "always",
           math: "always",

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
 const first_name = ref("");
 const last_name = ref("");
 const email = ref("");
@@ -16,10 +20,9 @@ const handleRegister = async () => {
         password: password.value,
       },
     });
+    router.push("/");
   } catch {
     errorMessage.value = "Échec de l'inscription. Essaye un autre email.";
-  } finally {
-    navigateTo("/");
   }
 };
 </script>
@@ -36,42 +39,17 @@ const handleRegister = async () => {
         class="flex w-full flex-col items-start gap-5"
         @submit.prevent="handleRegister"
       >
-        <input
-          v-model="first_name"
-          class="w-full rounded-xl border-2 border-neutral-800 bg-transparent p-3"
-          type="text"
-          placeholder="Prénom"
-          required
-        />
-        <input
-          v-model="last_name"
-          class="w-full rounded-xl border-2 border-neutral-800 bg-transparent p-3"
-          type="text"
-          placeholder="Nom"
-          required
-        />
-        <input
-          v-model="email"
-          class="w-full rounded-xl border-2 border-neutral-800 bg-transparent p-3"
-          type="email"
-          placeholder="Email"
-          required
-        />
-        <input
+        <BaseInput v-model="first_name" placeholder="Prénom" />
+        <BaseInput v-model="last_name" placeholder="Nom" />
+        <BaseInput v-model="email" type="email" placeholder="Email" />
+        <BaseInput
           v-model="password"
-          class="w-full rounded-xl border-2 border-neutral-800 p-3"
           type="password"
           placeholder="Mot de passe"
-          required
         />
-        <button
-          class="cursor-pointer rounded-2xl border-2 border-transparent bg-neutral-800 px-10 py-3 hover:border-neutral-400"
-          type="submit"
-        >
-          S'inscrire
-        </button>
+        <BaseButton type="submit">S'inscrire</BaseButton>
       </form>
-      <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
+      <AuthError v-if="errorMessage">{{ errorMessage }}</AuthError>
       <p>
         Déjà un compte ?
         <NuxtLink

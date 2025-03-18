@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useBlocs } from "@/composables/useBlocs";
 import authMiddleware from "../../../../middleware/auth";
-import CardBloc from "../../../components/shared/CardBloc.vue";
 
 definePageMeta({
   middleware: [authMiddleware],

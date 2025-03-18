@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import authMiddleware from "../../middleware/auth";
-import ProfileTabs from "~/components/ProfileTabs.vue";
-import FriendRequests from "~/components/FriendRequests.vue";
-import FriendsList from "~/components/FriendsList.vue";
+import ProfileTabs from "~/components/profile/ProfileTabs.vue";
+import FriendRequests from "~/components/friends/FriendRequests.vue";
+import FriendsList from "~/components/friends/FriendsList.vue";
 
 const {
   requests,
