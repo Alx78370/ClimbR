@@ -44,7 +44,9 @@ const copyToClipboard = async () => {
   >
     <div class="mx-auto flex w-[60%] justify-between">
       <nav class="flex items-center gap-5 text-white">
-        <NuxtLink to="/" class="hover:underline">Accueil</NuxtLink>
+        <NuxtLink to="/" class="hover:underline">
+          <img src="/logos/ClimbR_logo_white.webp" alt="logo" class="h-10" />
+        </NuxtLink>
         <NuxtLink to="/users/blocs" class="hover:underline">Mes blocs</NuxtLink>
       </nav>
       <div class="flex items-center gap-5">
