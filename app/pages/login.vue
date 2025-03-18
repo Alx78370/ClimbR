@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const { fetch } = useUserSession();
+
 const email = ref("");
 const password = ref("");
 const errorMessage = ref("");
@@ -11,7 +15,7 @@ const handleLogin = async () => {
       body: { email: email.value, password: password.value },
     });
     await fetch();
-    navigateTo("/");
+    router.push("/");
   } catch {
     errorMessage.value = "Échec de la connexion. Vérifie tes identifiants.";
   }
@@ -30,28 +34,15 @@ const handleLogin = async () => {
         class="flex w-full flex-col items-start gap-5"
         @submit.prevent="handleLogin"
       >
-        <input
-          v-model="email"
-          class="w-full rounded-xl border-2 border-neutral-800 bg-transparent p-3"
-          type="email"
-          placeholder="Email"
-          required
-        />
-        <input
+        <BaseInput v-model="email" type="email" placeholder="Email" />
+        <BaseInput
           v-model="password"
-          class="w-full rounded-xl border-2 border-neutral-800 p-3"
           type="password"
           placeholder="Mot de passe"
-          required
         />
-        <button
-          class="cursor-pointer rounded-2xl border-2 border-transparent bg-neutral-800 px-10 py-3 hover:border-2 hover:border-neutral-400"
-          type="submit"
-        >
-          Se connecter
-        </button>
+        <BaseButton type="submit">Se connecter</BaseButton>
       </form>
-      <p v-if="errorMessage">{{ errorMessage }}</p>
+      <AuthError v-if="errorMessage">{{ errorMessage }}</AuthError>
       <p>
         Pas encore inscrit ?
         <NuxtLink

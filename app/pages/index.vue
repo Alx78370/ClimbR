@@ -13,7 +13,10 @@ onMounted(fetchBlocs);
 
 <template>
   <div v-if="isLoading" class="flex h-screen items-center justify-center">
-    <p class="text-xl text-white">Chargement...</p>
+    <Icon
+      name="svg-spinners:blocks-shuffle-3"
+      class="text-4xl text-orange-500"
+    />
   </div>
 
   <div v-else-if="blocs.length === 0" class="-mt-20 flex h-[90vh]">
