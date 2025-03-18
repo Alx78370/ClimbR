@@ -83,9 +83,9 @@ const handleSendFriendRequest = async (friendUsername: string) => {
     <div
       class="flex max-h-[60vh] w-full max-w-2xl flex-col rounded-lg bg-neutral-900 p-4 shadow-lg"
     >
-      <HeaderModal :bloc-title="blocTitle" @close="closeModal" />
+      <BlocModalHeader :bloc-title="blocTitle" @close="closeModal" />
 
-      <TabsSection
+      <BlocModalTabsSection
         :active-tab="activeTab"
         :likes-count="likes.length"
         :comments-count="comments.length"
@@ -94,7 +94,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
 
       <div class="mt-4 max-h-[60vh] flex-1 space-y-3 overflow-y-auto">
         <div v-if="activeTab === 'likes'">
-          <LikeItem
+          <BlocModalLikeItem
             v-for="like in likes"
             :key="like.user_id"
             :like="like"
@@ -105,7 +105,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
         </div>
 
         <div v-if="activeTab === 'comments'">
-          <CommentItem
+          <BlocModalCommentItem
             v-for="comment in comments"
             :key="comment.id"
             :comment="comment"
@@ -116,7 +116,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
         </div>
       </div>
 
-      <FooterActions
+      <BlocModalFooterActions
         :active-tab="activeTab"
         :bloc-id="blocId"
         @comment-submitted="handleCommentSubmitted"
