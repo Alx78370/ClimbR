@@ -4,7 +4,7 @@ import "vue-advanced-cropper/dist/style.css";
 import { useProfilePicture } from "~/composables/useProfilePicture";
 
 const { uploadProfilePicture } = useProfilePicture();
-const { user } = useUserSession(); // ❌ Supprime `fetch`
+const { user } = useUserSession();
 const fileInput = ref<HTMLInputElement | null>(null);
 const image = ref<string | null>(null);
 const profile_picture = computed(() => user.value?.profile_picture || null);
