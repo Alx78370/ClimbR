@@ -56,14 +56,14 @@ const copyToClipboard = async () => {
           <button v-if="loggedIn">
             <div
               v-if="!user?.profile_picture"
-              class="flex items-center justify-center rounded-t border-x-2 border-t-2 border-transparent py-4 underline-offset-4 hover:cursor-pointer hover:underline group-hover:border-x-2 group-hover:border-t-2 group-hover:border-neutral-900 group-hover:pl-2"
+              class="flex items-center justify-center rounded-t border-x-2 border-t-2 border-transparent py-4 underline-offset-4 group-hover:border-x-2 group-hover:border-t-2 group-hover:border-neutral-900 group-hover:pl-2 hover:cursor-pointer hover:underline"
             >
               <Icon name="lucide:circle-user-round" class="text-4xl" />
               <Icon name="lucide:chevron-down" class="text-2xl" />
             </div>
             <div
               v-else
-              class="flex items-center justify-center rounded-t border-x-2 border-t-2 border-transparent py-4 underline-offset-4 hover:cursor-pointer hover:underline group-hover:border-x-2 group-hover:border-t-2 group-hover:border-neutral-900 group-hover:pl-2"
+              class="flex items-center justify-center rounded-t border-x-2 border-t-2 border-transparent py-4 underline-offset-4 group-hover:border-x-2 group-hover:border-t-2 group-hover:border-neutral-900 group-hover:pl-2 hover:cursor-pointer hover:underline"
             >
               <img
                 :src="user?.profile_picture"
@@ -79,11 +79,11 @@ const copyToClipboard = async () => {
           ></div>
           <div
             v-if="loggedIn && showDropdown"
-            class="absolute right-0 top-full flex w-fit flex-col rounded-b border-2 border-neutral-900 bg-neutral-950 px-2"
+            class="absolute top-full right-0 flex w-fit flex-col rounded-b border-2 border-neutral-900 bg-neutral-950 px-2"
           >
             <div class="flex items-center justify-center hover:bg-neutral-900">
               <p
-                class="cursor-pointer select-text p-2 font-bold"
+                class="cursor-pointer p-2 font-bold select-text"
                 @click="copyToClipboard"
               >
                 {{ user?.username }}
@@ -101,7 +101,7 @@ const copyToClipboard = async () => {
               </button>
             </div>
             <button
-              class="cursor-pointer text-nowrap p-2 hover:bg-neutral-900"
+              class="cursor-pointer p-2 text-nowrap hover:bg-neutral-900"
               @click="showAddFriendInput = !showAddFriendInput"
             >
               Ajouter un ami
@@ -125,7 +125,7 @@ const copyToClipboard = async () => {
 
             <NuxtLink
               to="/profile"
-              class="cursor-pointer text-nowrap p-2 hover:bg-neutral-900"
+              class="cursor-pointer p-2 text-nowrap hover:bg-neutral-900"
             >
               Mon profil
             </NuxtLink>

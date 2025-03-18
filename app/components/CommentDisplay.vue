@@ -28,7 +28,7 @@ const closeModal = () => {
 const commentText = computed(() =>
   props.commentCount === 1
     ? "1 commentaire"
-    : `${props.commentCount} commentaires`
+    : `${props.commentCount} commentaires`,
 );
 </script>
 

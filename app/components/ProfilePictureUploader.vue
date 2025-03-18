@@ -86,7 +86,7 @@ const cropImage = async () => {
       </label>
       <Icon
         name="icon-park-twotone:add-one"
-        class="absolute right-2 top-[80%] z-10 text-2xl opacity-50 transition-all duration-200 ease-in-out group-hover:opacity-100"
+        class="absolute top-[80%] right-2 z-10 text-2xl opacity-50 transition-all duration-200 ease-in-out group-hover:opacity-100"
       />
     </div>
 

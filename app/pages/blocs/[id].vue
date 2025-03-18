@@ -111,7 +111,7 @@ const cropImage = async () => {
           />
           <Icon
             name="heroicons-solid:calendar"
-            class="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-2xl text-white"
+            class="pointer-events-none absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 transform text-2xl text-white"
           />
         </div>
       </label>

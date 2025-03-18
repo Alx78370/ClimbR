@@ -87,7 +87,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center bg-neutral-950/80 justify-center"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/80"
     @click.self="closeModal"
   >
     <div
@@ -167,7 +167,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
             <!-- ✅ Si la demande est en attente, afficher "En attente..." -->
             <span
               v-else-if="getFriendshipStatus(like.user_id) === 'pending'"
-              class="italic text-gray-400"
+              class="text-gray-400 italic"
             >
               Demande en attente
             </span>
@@ -178,7 +178,7 @@ const handleSendFriendRequest = async (friendUsername: string) => {
           <div
             v-for="comment in comments"
             :key="comment.id"
-            class="group flex items-start gap-3 border-b border-neutral-800 pb-2 pr-3"
+            class="group flex items-start gap-3 border-b border-neutral-800 pr-3 pb-2"
           >
             <img
               v-if="comment.profile_picture"

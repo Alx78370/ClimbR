@@ -36,7 +36,7 @@ const handleCancel = () => {
     <textarea
       v-model="comment"
       placeholder="Écrire un commentaire..."
-      class="w-full rounded bg-neutral-700 text-white focus:outline-none p-2"
+      class="w-full rounded bg-neutral-700 p-2 text-white focus:outline-none"
     ></textarea>
 
     <p v-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
