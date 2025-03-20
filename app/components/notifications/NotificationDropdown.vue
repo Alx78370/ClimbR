@@ -21,6 +21,8 @@ const handleHoverNotification = async (notif: Notification) => {
 const handleNotificationClick = (notif: Notification) => {
   if (notif.type === "friend_request") {
     router.push({ path: "/profile", query: { tab: "requests" } });
+  } else if (notif.type === "friend_accepted") {
+    router.push({ path: "/profile", query: { tab: "friends" } });
   }
 };
 </script>
