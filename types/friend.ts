@@ -12,7 +12,3 @@ export interface FriendRequest {
   last_name: string;
   username: string;
 }
-
-export interface ApiResponse {
-  message: string;
-}

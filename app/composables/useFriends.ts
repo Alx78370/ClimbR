@@ -1,5 +1,6 @@
 import { capitalizeFirstLetter } from "~~/utils/capitalize";
-import type { Friend, FriendRequest, ApiResponse } from "../../types/friend";
+import type { Friend, FriendRequest } from "~~/types/friend";
+import type { ApiResponse } from "~~/types/api";
 
 export function useFriends() {
   const requests = ref<FriendRequest[]>([]);
