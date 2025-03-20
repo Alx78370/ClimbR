@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { capitalizeFirstLetter } from "~~/utils/capitalize";
+
 const props = defineProps<{
   like: {
     user_id: number;
@@ -34,7 +36,8 @@ const handleSendFriendRequest = () => {
         class="text-4xl text-gray-500"
       />
       <p class="text-sm text-white">
-        {{ like.first_name }} {{ like.last_name }}
+        {{ capitalizeFirstLetter(like.first_name) }}
+        {{ capitalizeFirstLetter(like.last_name) }}
       </p>
     </div>
     <button

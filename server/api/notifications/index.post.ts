@@ -5,6 +5,18 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const { userId, senderId, type, message } = body;
 
+    const { rows: userCheck } = await pool.query(
+      "SELECT id FROM users WHERE id = $1",
+      [userId],
+    );
+
+    if (userCheck.length === 0) {
+      console.error(
+        `❌ ERREUR : L'utilisateur cible (user_id=${userId}) n'existe pas.`,
+      );
+      return { error: "Utilisateur cible introuvable." };
+    }
+
     const { rows } = await pool.query(
       `
       INSERT INTO notifications (user_id, sender_id, type, message)

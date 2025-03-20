@@ -14,15 +14,48 @@ const logout = async () => {
 };
 
 const sendFriendRequestWithFeedback = async () => {
-  if (!friendUsername.value || !user.value?.id) return;
+  if (
+    !friendUsername.value ||
+    !user.value?.id ||
+    !user.value?.first_name ||
+    !user.value?.last_name
+  )
+    return;
 
-  await sendFriendRequest(user.value.id, friendUsername.value);
+  try {
+    // ✅ Récupérer l'ID du destinataire à partir de son username
+    const friendData = await $fetch<{ id: number }>(
+      "/api/friends/userByUsername",
+      {
+        method: "POST",
+        body: { username: friendUsername.value },
+      },
+    );
 
-  setTimeout(() => {
-    message.value = "";
-    friendUsername.value = "";
-    showAddFriendInput.value = false;
-  }, 3000);
+    if (!friendData?.id) {
+      message.value = "Utilisateur introuvable.";
+      return;
+    }
+
+    // ✅ Envoyer la demande d'ami avec le prénom et nom de l'expéditeur
+    await sendFriendRequest(
+      user.value.id,
+      user.value.first_name,
+      user.value.last_name,
+      friendUsername.value,
+      friendData.id,
+    );
+
+    // ✅ Réinitialiser l'input et afficher le message de confirmation
+    setTimeout(() => {
+      message.value = "";
+      friendUsername.value = "";
+      showAddFriendInput.value = false;
+    }, 3000);
+  } catch (error) {
+    console.error("❌ Erreur lors de l'envoi de la demande d'ami :", error);
+    message.value = "Erreur lors de l'envoi de la demande.";
+  }
 };
 
 const copyToClipboard = async () => {
@@ -40,7 +73,7 @@ const copyToClipboard = async () => {
 
 <template>
   <header
-    class="w-full border-b-2 border-neutral-900 bg-neutral-950 text-center"
+    class="h-fit w-full border-b-2 border-neutral-900 bg-neutral-950 text-center"
   >
     <div class="mx-auto flex w-[60%] justify-between">
       <nav class="flex items-center gap-5 text-white">
@@ -49,7 +82,10 @@ const copyToClipboard = async () => {
         </NuxtLink>
         <NuxtLink to="/users/blocs" class="hover:underline">Mes blocs</NuxtLink>
       </nav>
-      <div class="flex items-center gap-5">
+
+      <div class="flex items-center gap-2">
+        <NotificationDropdown />
+
         <div
           class="group relative flex flex-col gap-2 text-white"
           @mouseenter="showDropdown = true"
@@ -58,14 +94,14 @@ const copyToClipboard = async () => {
           <button v-if="loggedIn">
             <div
               v-if="!user?.profile_picture"
-              class="flex items-center justify-center rounded-t border-x-2 border-t-2 border-transparent py-4 underline-offset-4 group-hover:border-x-2 group-hover:border-t-2 group-hover:border-neutral-900 group-hover:pl-2 hover:cursor-pointer hover:underline"
+              class="flex items-center justify-center rounded-t border-x-2 border-t-2 border-transparent px-2 py-4 underline-offset-4 group-hover:border-x-2 group-hover:border-t-2 group-hover:border-neutral-900 hover:cursor-pointer hover:underline"
             >
               <Icon name="lucide:circle-user-round" class="text-4xl" />
               <Icon name="lucide:chevron-down" class="text-2xl" />
             </div>
             <div
               v-else
-              class="flex items-center justify-center rounded-t border-x-2 border-t-2 border-transparent py-4 underline-offset-4 group-hover:border-x-2 group-hover:border-t-2 group-hover:border-neutral-900 group-hover:pl-2 hover:cursor-pointer hover:underline"
+              class="flex items-center justify-center rounded-t border-x-2 border-t-2 border-transparent px-2 py-4 underline-offset-4 group-hover:border-x-2 group-hover:border-t-2 group-hover:border-neutral-900 hover:cursor-pointer hover:underline"
             >
               <img
                 :src="user?.profile_picture"
@@ -142,7 +178,7 @@ const copyToClipboard = async () => {
 
         <NuxtLink
           to="/blocs/new"
-          class="group relative flex w-fit items-center justify-center"
+          class="group relative flex w-fit items-center justify-center px-2"
         >
           <Icon
             name="icon-park-outline:add-one"

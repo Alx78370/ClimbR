@@ -1,3 +1,4 @@
+import { capitalizeFirstLetter } from "~~/utils/capitalize";
 import type { Friend, FriendRequest, ApiResponse } from "../../types/friend";
 
 export function useFriends() {
@@ -8,6 +9,8 @@ export function useFriends() {
   );
   const message = ref<string>("");
 
+  const { fetchNotifications } = useNotifications();
+
   // ✅ Vérifier le statut d'amitié (retourne 'none', 'pending', ou 'accepted')
   const getFriendshipStatus = (
     userId: number,
@@ -15,15 +18,27 @@ export function useFriends() {
     return friendshipStatus.value[userId] || "none";
   };
 
-  // Envoyer une demande d'ami
+  // ✅ Envoyer une demande d'ami et créer une notification
   const sendFriendRequest = async (
-    userId: number,
+    currentUserId: number,
+    firstName: string,
+    lastName: string,
     friendUsername: string,
+    friendId: number,
   ): Promise<void> => {
-    if (!userId || !friendUsername) {
-      console.error("Erreur : userId ou friendUsername est manquant", {
-        userId,
+    if (
+      !currentUserId ||
+      !firstName ||
+      !lastName ||
+      !friendUsername ||
+      !friendId
+    ) {
+      console.error("❌ Erreur : Données manquantes", {
+        currentUserId,
+        firstName,
+        lastName,
         friendUsername,
+        friendId,
       });
       message.value = "Erreur : données manquantes.";
       return;
@@ -32,11 +47,24 @@ export function useFriends() {
     try {
       const response = await $fetch<ApiResponse>("/api/friends/request", {
         method: "POST",
-        body: { userId, friendUsername },
+        body: { userId: currentUserId, friendUsername },
       });
 
       message.value = response.message;
-    } catch {
+
+      await $fetch("/api/notifications", {
+        method: "POST",
+        body: {
+          userId: friendId,
+          senderId: currentUserId,
+          type: "friend_request",
+          message: `${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(lastName)} vous a envoyé une demande d'ami.`,
+        },
+      });
+
+      fetchNotifications();
+    } catch (error) {
+      console.error("❌ Erreur lors de l'envoi de la demande d'ami :", error);
       message.value = "Erreur lors de l'envoi de la demande.";
     }
   };
@@ -44,17 +72,33 @@ export function useFriends() {
   // Récupérer les demandes d'amis en attente
   const fetchRequests = async (): Promise<void> => {
     try {
-      requests.value = await $fetch<FriendRequest[]>("/api/friends/pending");
+      const data = await $fetch<FriendRequest[]>("/api/friends/pending");
+
+      requests.value = data.map((req) => ({
+        id: req.id,
+        friend_id: req.friend_id,
+        user_id: req.user_id,
+        first_name: req.first_name,
+        last_name: req.last_name,
+        username: req.username,
+      }));
     } catch (error) {
-      console.error("Erreur lors de la récupération des demandes :", error);
+      console.error("❌ Erreur lors de la récupération des demandes :", error);
     }
   };
 
-  // Accepter une demande d'ami
+  // ✅ Accepter une demande d'ami et créer une notification
   const acceptRequest = async (
     friendshipId: string | number,
+    user_id: number,
+    friend_id: number,
+    first_name: string,
+    last_name: string,
   ): Promise<void> => {
     try {
+      const currentUserId = useUserSession().user.value?.id;
+      if (!currentUserId) return;
+
       await $fetch<ApiResponse>("/api/friends/acceptFriend", {
         method: "POST",
         body: { friendshipId: Number(friendshipId) },
@@ -64,6 +108,20 @@ export function useFriends() {
       requests.value = requests.value.filter(
         (r) => r.id !== Number(friendshipId),
       );
+
+      await fetchFriends(currentUserId);
+
+      await $fetch("/api/notifications", {
+        method: "POST",
+        body: {
+          userId: user_id,
+          senderId: friend_id,
+          type: "friend_accepted",
+          message: `${capitalizeFirstLetter(first_name)} ${capitalizeFirstLetter(last_name)} a accepté votre demande d'ami.`,
+        },
+      });
+
+      fetchNotifications();
     } catch {
       message.value = "Erreur lors de l'acceptation.";
     }
