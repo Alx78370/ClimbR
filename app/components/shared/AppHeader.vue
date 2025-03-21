@@ -38,13 +38,7 @@ const sendFriendRequestWithFeedback = async () => {
     }
 
     // ✅ Envoyer la demande d'ami avec le prénom et nom de l'expéditeur
-    await sendFriendRequest(
-      user.value.id,
-      user.value.first_name,
-      user.value.last_name,
-      friendUsername.value,
-      friendData.id,
-    );
+    await sendFriendRequest(user.value.id, friendUsername.value);
 
     // ✅ Réinitialiser l'input et afficher le message de confirmation
     setTimeout(() => {

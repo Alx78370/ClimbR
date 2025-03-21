@@ -2,19 +2,9 @@
 defineProps<{
   requests: {
     id: string | number;
-    user_id: number;
-    friend_id: number;
     username: string;
-    first_name: string;
-    last_name: string;
   }[];
-  acceptRequest: (
-    id: string | number,
-    user_id: number,
-    friend_id: number,
-    first_name: string,
-    last_name: string,
-  ) => Promise<void>;
+  acceptRequest: (id: string | number) => Promise<void>;
   rejectRequest: (id: string | number) => Promise<void>;
 }>();
 </script>
@@ -30,15 +20,7 @@ defineProps<{
       <div class="flex space-x-2">
         <button
           class="rounded-lg bg-green-500 px-4 py-2 text-white transition hover:bg-green-600"
-          @click="
-            acceptRequest(
-              request.id,
-              request.user_id,
-              request.friend_id,
-              request.first_name,
-              request.last_name,
-            )
-          "
+          @click="acceptRequest(request.id)"
         >
           Accepter
         </button>

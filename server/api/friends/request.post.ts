@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
 
   const client = await pool.connect();
   try {
-    // Trouver l'ID de l'ami via son pseudo
+    // Trouver l'utilisateur destinataire via son pseudo
     const friendResult = await client.query(
       "SELECT id FROM users WHERE username = $1",
       [friendUsername],
@@ -31,17 +31,39 @@ export default defineEventHandler(async (event) => {
       [userId, friendId],
     );
 
-    if (existingRequest.rowCount !== null && existingRequest.rowCount > 0) {
+    if ((existingRequest.rowCount ?? 0) > 0) {
       return { message: "Demande déjà envoyée ou utilisateur déjà ami." };
     }
 
-    // Ajouter la relation
+    // Créer la demande d'amitié
     await client.query(
       "INSERT INTO friendships (user_id, friend_id, status) VALUES ($1, $2, 'pending')",
       [userId, friendId],
     );
 
+    // Récupérer prénom et nom de l'expéditeur
+    const { rows: senderRows } = await client.query(
+      "SELECT first_name, last_name FROM users WHERE id = $1",
+      [userId],
+    );
+
+    const firstName = senderRows[0]?.first_name ?? "";
+    const lastName = senderRows[0]?.last_name ?? "";
+    const message = `${firstName} ${lastName} vous a envoyé une demande d'ami.`;
+
+    // Créer la notification
+    await client.query(
+      `INSERT INTO notifications (user_id, sender_id, type, message)
+       VALUES ($1, $2, $3, $4);`,
+      [friendId, userId, "friend_request", message],
+    );
+
     return { message: "Demande d'ami envoyée." };
+  } catch {
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Erreur lors de la création de la demande d'ami.",
+    });
   } finally {
     client.release();
   }

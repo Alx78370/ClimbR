@@ -8,7 +8,5 @@ export interface FriendRequest {
   id: number;
   user_id: number;
   friend_id: number;
-  first_name: string;
-  last_name: string;
   username: string;
 }

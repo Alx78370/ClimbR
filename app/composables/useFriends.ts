@@ -1,4 +1,3 @@
-import { capitalizeFirstLetter } from "~~/utils/capitalize";
 import type { Friend, FriendRequest } from "~~/types/friend";
 import type { ApiResponse } from "~~/types/api";
 
@@ -10,8 +9,6 @@ export function useFriends() {
   );
   const message = ref<string>("");
 
-  const { fetchNotifications } = useNotifications();
-
   // ✅ Vérifier le statut d'amitié (retourne 'none', 'pending', ou 'accepted')
   const getFriendshipStatus = (
     userId: number,
@@ -19,28 +16,12 @@ export function useFriends() {
     return friendshipStatus.value[userId] || "none";
   };
 
-  // ✅ Envoyer une demande d'ami et créer une notification
+  // ✅ Envoyer une demande d'ami
   const sendFriendRequest = async (
     currentUserId: number,
-    firstName: string,
-    lastName: string,
     friendUsername: string,
-    friendId: number,
   ): Promise<void> => {
-    if (
-      !currentUserId ||
-      !firstName ||
-      !lastName ||
-      !friendUsername ||
-      !friendId
-    ) {
-      console.error("❌ Erreur : Données manquantes", {
-        currentUserId,
-        firstName,
-        lastName,
-        friendUsername,
-        friendId,
-      });
+    if (!currentUserId || !friendUsername) {
       message.value = "Erreur : données manquantes.";
       return;
     }
@@ -52,18 +33,6 @@ export function useFriends() {
       });
 
       message.value = response.message;
-
-      await $fetch("/api/notifications", {
-        method: "POST",
-        body: {
-          userId: friendId,
-          senderId: currentUserId,
-          type: "friend_request",
-          message: `${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(lastName)} vous a envoyé une demande d'ami.`,
-        },
-      });
-
-      fetchNotifications();
     } catch (error) {
       console.error("❌ Erreur lors de l'envoi de la demande d'ami :", error);
       message.value = "Erreur lors de l'envoi de la demande.";
@@ -73,28 +42,15 @@ export function useFriends() {
   // Récupérer les demandes d'amis en attente
   const fetchRequests = async (): Promise<void> => {
     try {
-      const data = await $fetch<FriendRequest[]>("/api/friends/pending");
-
-      requests.value = data.map((req) => ({
-        id: req.id,
-        friend_id: req.friend_id,
-        user_id: req.user_id,
-        first_name: req.first_name,
-        last_name: req.last_name,
-        username: req.username,
-      }));
+      requests.value = await $fetch<FriendRequest[]>("/api/friends/pending");
     } catch (error) {
       console.error("❌ Erreur lors de la récupération des demandes :", error);
     }
   };
 
-  // ✅ Accepter une demande d'ami et créer une notification
+  // ✅ Accepter une demande d'ami
   const acceptRequest = async (
     friendshipId: string | number,
-    user_id: number,
-    friend_id: number,
-    first_name: string,
-    last_name: string,
   ): Promise<void> => {
     try {
       const currentUserId = useUserSession().user.value?.id;
@@ -111,18 +67,6 @@ export function useFriends() {
       );
 
       await fetchFriends(currentUserId);
-
-      await $fetch("/api/notifications", {
-        method: "POST",
-        body: {
-          userId: user_id,
-          senderId: friend_id,
-          type: "friend_accepted",
-          message: `${capitalizeFirstLetter(first_name)} ${capitalizeFirstLetter(last_name)} a accepté votre demande d'ami.`,
-        },
-      });
-
-      fetchNotifications();
     } catch {
       message.value = "Erreur lors de l'acceptation.";
     }
