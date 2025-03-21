@@ -83,6 +83,8 @@ export default defineEventHandler(async (event) => {
       const firstName = userRows[0]?.first_name ?? "Un ami";
       const lastName = userRows[0]?.last_name ?? "";
 
+      const notify = [];
+
       // 🔔 Envoyer une notification à chaque ami
       for (const friend of friends) {
         await $fetch<NotificationAwareResponse>("/api/notifications/create", {
@@ -94,11 +96,18 @@ export default defineEventHandler(async (event) => {
             message: `${firstName} ${lastName} a publié un nouveau bloc !`,
           },
         });
+
+        notify.push({
+          receiverId: friend.id,
+          type: "new_bloc",
+          message: `${firstName} ${lastName} a publié un nouveau bloc !`,
+        });
       }
 
       return {
         success: true,
         bloc: createdBloc,
+        notify,
       };
     } finally {
       client.release();

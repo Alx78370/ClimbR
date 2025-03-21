@@ -1,6 +1,7 @@
 import { useRouter } from "vue-router";
 import { useFileUpload } from "./useFileUpload";
 import type { Bloc } from "../../types/bloc";
+import type { MultiNotificationAwareResponse } from "~~/types/api";
 
 export function useBlocForm(blocRef: Ref<Bloc | null>) {
   const router = useRouter();
@@ -23,6 +24,8 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
   const mediaFile = ref<File | null>(null);
   const selectedFileName = ref<string>("");
   const { mediaFileName } = useFileUpload();
+
+  const { sendNotification } = useNotifications();
 
   watch(
     blocRef,
@@ -71,7 +74,7 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
         });
         blocId = blocRef.value.id;
       } else {
-        const newBloc = await $fetch<{ success: boolean; bloc: Bloc }>(
+        const response = await $fetch<MultiNotificationAwareResponse>(
           "/api/blocs",
           {
             method: "POST",
@@ -80,11 +83,22 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
           },
         );
 
-        if (!newBloc || !newBloc.bloc || !newBloc.bloc.id) {
+        if (!response || !response.bloc || !response.bloc.id) {
           return;
         }
 
-        blocId = newBloc.bloc.id;
+        blocId = response.bloc.id;
+
+        // ✅ Envoi des notifications en temps réel à tous les amis
+        if (Array.isArray(response.notify)) {
+          for (const n of response.notify) {
+            sendNotification({
+              receiverId: n.receiverId,
+              type: n.type,
+              message: n.message,
+            });
+          }
+        }
       }
 
       if (mediaFile.value && blocId) {
