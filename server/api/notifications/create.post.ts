@@ -5,7 +5,6 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const { receiverId, senderId, type, message } = body;
 
-    // ✅ Vérifie que le destinataire existe
     const { rows: userCheck } = await pool.query(
       "SELECT id FROM users WHERE id = $1",
       [receiverId],
@@ -18,7 +17,6 @@ export default defineEventHandler(async (event) => {
       return { error: "Utilisateur cible introuvable." };
     }
 
-    // ✅ Crée la notification
     const { rows } = await pool.query(
       `
       INSERT INTO notifications (user_id, sender_id, type, message)
@@ -28,7 +26,12 @@ export default defineEventHandler(async (event) => {
       [receiverId, senderId, type, message],
     );
 
-    return { success: true, notification: rows[0] };
+    const notification = rows[0];
+
+    return {
+      success: true,
+      notification,
+    };
   } catch (error) {
     console.error("❌ Erreur lors de l'ajout de la notification :", error);
     throw error;

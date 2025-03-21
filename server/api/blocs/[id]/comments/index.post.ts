@@ -54,7 +54,10 @@ export default defineEventHandler(async (event) => {
           ? body.content.substring(0, 30) + "..."
           : body.content;
 
+      let notify = null;
+
       if (userId !== blocOwnerId) {
+        // ✅ Crée la notification (en BDD)
         await $fetch<ApiResponse>("/api/notifications/create", {
           method: "POST",
           body: {
@@ -64,9 +67,19 @@ export default defineEventHandler(async (event) => {
             message: `${firstName} ${lastName} a commenté votre bloc : "${truncatedContent}".`,
           },
         });
+
+        // ✅ Retourne les infos pour que le client puisse faire le socket.emit()
+        notify = {
+          receiverId: blocOwnerId,
+          type: "comment",
+          message: `${firstName} ${lastName} a commenté votre bloc : "${truncatedContent}".`,
+        };
       }
 
-      return { message: "Commentaire ajouté !" };
+      return {
+        message: "Commentaire ajouté !",
+        notify,
+      };
     } finally {
       client.release();
     }

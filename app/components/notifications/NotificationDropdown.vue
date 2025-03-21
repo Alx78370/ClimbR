@@ -4,12 +4,23 @@ import { getNotificationTitle } from "~~/utils/notificationUtils";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const { notifications, unreadCount, fetchNotifications, markAsRead } =
-  useNotifications();
+const {
+  notifications,
+  unreadCount,
+  fetchNotifications,
+  markAsRead,
+  listenForNotifications,
+  joinRoom,
+} = useNotifications();
 const isOpen = ref<boolean>(false);
+const { user } = useUserSession();
 
 onMounted(() => {
   fetchNotifications();
+  if (user.value?.id) {
+    joinRoom(user.value.id);
+    listenForNotifications();
+  }
 });
 
 const handleHoverNotification = async (notif: Notification) => {
