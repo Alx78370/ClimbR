@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
   const client = await pool.connect();
   try {
-    // Trouver l'utilisateur destinataire via son pseudo
+    // Trouver l'utilisateur destinataire
     const friendResult = await client.query(
       "SELECT id FROM users WHERE username = $1",
       [friendUsername],
@@ -50,19 +50,28 @@ export default defineEventHandler(async (event) => {
 
     const firstName = senderRows[0]?.first_name ?? "";
     const lastName = senderRows[0]?.last_name ?? "";
+    const message = `${firstName} ${lastName} vous a envoyé une demande d'ami.`;
 
-    // Créer la notification
+    // Créer la notif en BDD
     await $fetch<NotificationAwareResponse>("/api/notifications/create", {
       method: "POST",
       body: {
         receiverId: friendId,
         senderId: userId,
         type: "friend_request",
-        message: `${firstName} ${lastName} vous a envoyé une demande d'ami.`,
+        message,
       },
     });
 
-    return { message: "Demande d'ami envoyée." };
+    // ✅ Retourner les infos pour le socket côté client
+    return {
+      message: "Demande d'ami envoyée.",
+      notify: {
+        receiverId: friendId,
+        type: "friend_request",
+        message,
+      },
+    };
   } catch {
     throw createError({
       statusCode: 500,

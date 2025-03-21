@@ -44,18 +44,28 @@ export default defineEventHandler(async (event) => {
     const firstName = userRows[0]?.first_name ?? "";
     const lastName = userRows[0]?.last_name ?? "";
 
-    // ✅ Créer la notification
+    const message = `${firstName} ${lastName} a accepté votre demande d'ami.`;
+
+    // ✅ Créer la notification dans la BDD
     await $fetch<NotificationAwareResponse>("/api/notifications/create", {
       method: "POST",
       body: {
         receiverId: requesterId,
         senderId: accepterId,
         type: "friend_accepted",
-        message: `${firstName} ${lastName} a accepté votre demande d'ami.`,
+        message,
       },
     });
 
-    return { message: "Demande d'ami acceptée" };
+    // ✅ Retourner notify pour émission client
+    return {
+      message: "Demande d'ami acceptée",
+      notify: {
+        receiverId: requesterId,
+        type: "friend_accepted",
+        message,
+      },
+    };
   } catch (err) {
     console.error("❌ Erreur lors de l'acceptation de la demande :", err);
     throw err;

@@ -1,7 +1,9 @@
 import type { Friend, FriendRequest } from "~~/types/friend";
-import type { ApiResponse } from "~~/types/api";
+import type { NotificationAwareResponse } from "~~/types/api";
 
 export function useFriends() {
+  const { sendNotification } = useNotifications();
+
   const requests = ref<FriendRequest[]>([]);
   const friends = ref<Friend[]>([]);
   const friendshipStatus = ref<Record<number, "none" | "pending" | "accepted">>(
@@ -27,10 +29,24 @@ export function useFriends() {
     }
 
     try {
-      const response = await $fetch<ApiResponse>("/api/friends/request", {
-        method: "POST",
-        body: { userId: currentUserId, friendUsername },
-      });
+      const response = await $fetch<NotificationAwareResponse>(
+        "/api/friends/request",
+        {
+          method: "POST",
+          body: {
+            userId: currentUserId,
+            friendUsername: friendUsername,
+          },
+        },
+      );
+
+      if (response.notify) {
+        sendNotification({
+          receiverId: response.notify.receiverId,
+          type: response.notify.type,
+          message: response.notify.message,
+        });
+      }
 
       message.value = response.message;
     } catch (error) {
@@ -56,10 +72,23 @@ export function useFriends() {
       const currentUserId = useUserSession().user.value?.id;
       if (!currentUserId) return;
 
-      await $fetch<ApiResponse>("/api/friends/acceptFriend", {
-        method: "POST",
-        body: { friendshipId: Number(friendshipId) },
-      });
+      const { sendNotification } = useNotifications();
+
+      const response = await $fetch<NotificationAwareResponse>(
+        "/api/friends/acceptFriend",
+        {
+          method: "POST",
+          body: { friendshipId: Number(friendshipId) },
+        },
+      );
+
+      if (response.notify) {
+        sendNotification({
+          receiverId: response.notify.receiverId,
+          type: response.notify.type,
+          message: response.notify.message,
+        });
+      }
 
       message.value = "Ami accepté.";
       requests.value = requests.value.filter(
@@ -77,7 +106,7 @@ export function useFriends() {
     friendshipId: string | number,
   ): Promise<void> => {
     try {
-      await $fetch<ApiResponse>("/api/friends/rejectFriend", {
+      await $fetch<NotificationAwareResponse>("/api/friends/rejectFriend", {
         method: "POST",
         body: { friendshipId: Number(friendshipId) },
       });
