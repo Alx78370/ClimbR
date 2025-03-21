@@ -4,7 +4,7 @@ export function getNotificationTitle(type: string): string {
     friend_accepted: "Demande d'ami acceptée",
     like: "Nouvelle mention J'aime",
     comment: "Nouveau commentaire",
-    mention: "Vous avez été mentionné",
+    new_bloc: "Nouvelle activité",
   };
 
   return titles[type] || "Notification";
