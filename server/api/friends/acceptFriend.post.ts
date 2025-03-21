@@ -1,5 +1,5 @@
 import pool from "../../db";
-import type { ApiResponse } from "~~/types/api";
+import type { NotificationAwareResponse } from "~~/types/api";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
     const lastName = userRows[0]?.last_name ?? "";
 
     // ✅ Créer la notification
-    await $fetch<ApiResponse>("/api/notifications/create", {
+    await $fetch<NotificationAwareResponse>("/api/notifications/create", {
       method: "POST",
       body: {
         receiverId: requesterId,

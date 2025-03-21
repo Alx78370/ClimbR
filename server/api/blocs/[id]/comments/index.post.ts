@@ -1,4 +1,4 @@
-import type { ApiResponse } from "~~/types/api";
+import type { NotificationAwareResponse } from "~~/types/api";
 import pool from "../../../../db";
 
 export default defineEventHandler(async (event) => {
@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
 
       if (userId !== blocOwnerId) {
         // ✅ Crée la notification (en BDD)
-        await $fetch<ApiResponse>("/api/notifications/create", {
+        await $fetch<NotificationAwareResponse>("/api/notifications/create", {
           method: "POST",
           body: {
             receiverId: blocOwnerId,

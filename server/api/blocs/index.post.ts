@@ -1,5 +1,5 @@
 import pool from "../../db";
-import type { ApiResponse } from "~~/types/api";
+import type { NotificationAwareResponse } from "~~/types/api";
 import type { Bloc } from "../../../types/bloc";
 
 export default defineEventHandler(async (event) => {
@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
 
       // 🔔 Envoyer une notification à chaque ami
       for (const friend of friends) {
-        await $fetch<ApiResponse>("/api/notifications/create", {
+        await $fetch<NotificationAwareResponse>("/api/notifications/create", {
           method: "POST",
           body: {
             receiverId: friend.id,

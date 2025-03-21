@@ -1,12 +1,10 @@
-export interface ApiResponse {
+export interface NotificationPayload {
+  receiverId: number;
+  type: string;
   message: string;
 }
 
 export interface NotificationAwareResponse {
   message: string;
-  notify?: {
-    receiverId: number;
-    type: string;
-    message: string;
-  } | null;
+  notify?: NotificationPayload | null;
 }
