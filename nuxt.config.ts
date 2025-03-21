@@ -22,6 +22,11 @@ export default defineNuxtConfig({
       maxAge: 60 * 60 * 24 * 7,
     },
   },
+  nitro: {
+    experimental: {
+      websocket: true,
+    },
+  },
   components: [
     {
       path: "~/components",

@@ -1,4 +1,5 @@
 import pool from "../../db";
+import type { ApiResponse } from "~~/types/api";
 import type { Bloc } from "../../../types/bloc";
 
 export default defineEventHandler(async (event) => {
@@ -82,15 +83,17 @@ export default defineEventHandler(async (event) => {
       const firstName = userRows[0]?.first_name ?? "Un ami";
       const lastName = userRows[0]?.last_name ?? "";
 
-      const message = `${firstName} ${lastName} a publié un nouveau bloc !`;
-
       // 🔔 Envoyer une notification à chaque ami
       for (const friend of friends) {
-        await client.query(
-          `INSERT INTO notifications (user_id, sender_id, type, message)
-           VALUES ($1, $2, $3, $4);`,
-          [friend.id, userId, "new_bloc", message],
-        );
+        await $fetch<ApiResponse>("/api/notifications/create", {
+          method: "POST",
+          body: {
+            receiverId: friend.id,
+            senderId: userId,
+            type: "new_bloc",
+            message: `${firstName} ${lastName} a publié un nouveau bloc !`,
+          },
+        });
       }
 
       return {

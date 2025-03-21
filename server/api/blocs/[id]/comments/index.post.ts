@@ -1,3 +1,4 @@
+import type { ApiResponse } from "~~/types/api";
 import pool from "../../../../db";
 
 export default defineEventHandler(async (event) => {
@@ -53,18 +54,16 @@ export default defineEventHandler(async (event) => {
           ? body.content.substring(0, 30) + "..."
           : body.content;
 
-      // ✅ Vérifier que l'utilisateur ne commente pas son propre bloc
       if (userId !== blocOwnerId) {
-        await client.query(
-          `INSERT INTO notifications (user_id, sender_id, type, message)
-           VALUES ($1, $2, $3, $4);`,
-          [
-            blocOwnerId,
-            userId,
-            "comment",
-            `${firstName} ${lastName} a commenté votre bloc : "${truncatedContent}".`,
-          ],
-        );
+        await $fetch<ApiResponse>("/api/notifications/create", {
+          method: "POST",
+          body: {
+            receiverId: blocOwnerId,
+            senderId: userId,
+            type: "comment",
+            message: `${firstName} ${lastName} a commenté votre bloc : "${truncatedContent}".`,
+          },
+        });
       }
 
       return { message: "Commentaire ajouté !" };

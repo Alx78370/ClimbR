@@ -1,4 +1,5 @@
 import pool from "../../db";
+import type { ApiResponse } from "~~/types/api";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -49,14 +50,17 @@ export default defineEventHandler(async (event) => {
 
     const firstName = senderRows[0]?.first_name ?? "";
     const lastName = senderRows[0]?.last_name ?? "";
-    const message = `${firstName} ${lastName} vous a envoyé une demande d'ami.`;
 
     // Créer la notification
-    await client.query(
-      `INSERT INTO notifications (user_id, sender_id, type, message)
-       VALUES ($1, $2, $3, $4);`,
-      [friendId, userId, "friend_request", message],
-    );
+    await $fetch<ApiResponse>("/api/notifications/create", {
+      method: "POST",
+      body: {
+        receiverId: friendId,
+        senderId: userId,
+        type: "friend_request",
+        message: `${firstName} ${lastName} vous a envoyé une demande d'ami.`,
+      },
+    });
 
     return { message: "Demande d'ami envoyée." };
   } catch {
