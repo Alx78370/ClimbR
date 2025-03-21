@@ -1,4 +1,5 @@
 import type { Like, LikeResponse } from "~~/types/like";
+import type { NotificationAwareResponse } from "~~/types/api";
 
 export const useLike = (blocId: number) => {
   const likes = useState<number>(`likes-${blocId}`, () => 0);
@@ -7,6 +8,7 @@ export const useLike = (blocId: number) => {
   const likePreview = useState<Like[]>(`likePreview-${blocId}`, () => []);
 
   const { user } = useUserSession();
+  const { sendNotification } = useNotifications();
 
   const likeApiUrl = computed(() => `/api/blocs/${blocId}/likes`);
 
@@ -65,7 +67,20 @@ export const useLike = (blocId: number) => {
         );
       }
 
-      await $fetch(`${likeApiUrl.value}/toggle`, { method: "POST" });
+      const response = await $fetch<NotificationAwareResponse>(
+        `${likeApiUrl.value}/toggle`,
+        {
+          method: "POST",
+        },
+      );
+
+      if (response.notify) {
+        sendNotification({
+          receiverId: response.notify.receiverId,
+          type: response.notify.type,
+          message: response.notify.message,
+        });
+      }
     } catch (err) {
       console.error("❌ Erreur lors du toggle du like :", err);
       userHasLiked.value = !userHasLiked.value;

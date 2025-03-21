@@ -2,7 +2,7 @@ export interface ApiResponse {
   message: string;
 }
 
-export interface CommentPostResponse {
+export interface NotificationAwareResponse {
   message: string;
   notify?: {
     receiverId: number;

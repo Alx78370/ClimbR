@@ -43,6 +43,8 @@ export default defineEventHandler(async (event) => {
         const likerFirstName = userRows[0].first_name;
         const likerLastName = userRows[0].last_name;
 
+        let notify = null;
+
         if (userId !== blocOwnerId) {
           await $fetch<ApiResponse>("/api/notifications/create", {
             method: "POST",
@@ -53,9 +55,15 @@ export default defineEventHandler(async (event) => {
               message: `${likerFirstName} ${likerLastName} a aimé votre bloc !`,
             },
           });
+
+          notify = {
+            receiverId: blocOwnerId,
+            type: "like",
+            message: `${likerFirstName} ${likerLastName} a aimé votre bloc !`,
+          };
         }
 
-        return { message: "Like ajouté" };
+        return { message: "Like ajouté", notify };
       }
     } finally {
       client.release();

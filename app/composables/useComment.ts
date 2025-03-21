@@ -1,5 +1,5 @@
 import type { Comment } from "~~/types/comment";
-import type { CommentPostResponse } from "~~/types/api";
+import type { NotificationAwareResponse } from "~~/types/api";
 
 export const useComment = (blocId: number) => {
   const comments = useState<Comment[]>(`comments-${blocId}`, () => []);
@@ -42,7 +42,7 @@ export const useComment = (blocId: number) => {
     errorMessage.value = "";
 
     try {
-      const response = await $fetch<CommentPostResponse>(
+      const response = await $fetch<NotificationAwareResponse>(
         `/api/blocs/${blocId}/comments`,
         {
           method: "POST",
