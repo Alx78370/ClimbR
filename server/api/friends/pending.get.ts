@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
   try {
     const { rows } = await client.query(
       `
-            SELECT friendships.id, users.username
-            FROM friendships
-            JOIN users ON users.id = friendships.user_id
-            WHERE friendships.friend_id = $1 AND friendships.status = 'pending'
-            `,
+      SELECT friendships.id,friendships.friend_id AS friend_id, friendships.user_id AS user_id, users.username, users.first_name, users.last_name
+      FROM friendships
+      JOIN users ON users.id = friendships.friend_id
+      WHERE friendships.friend_id = $1 AND friendships.status = 'pending'
+      `,
       [userId],
     );
 

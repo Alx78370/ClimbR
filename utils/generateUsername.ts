@@ -1,4 +1,4 @@
-import pool from "../db";
+import pool from "../server/db";
 
 export async function generateUniqueUsername(
   firstName: string,

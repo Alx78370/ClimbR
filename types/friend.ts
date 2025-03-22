@@ -6,9 +6,7 @@ export interface Friend {
 
 export interface FriendRequest {
   id: number;
+  user_id: number;
+  friend_id: number;
   username: string;
-}
-
-export interface ApiResponse {
-  message: string;
 }

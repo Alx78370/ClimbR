@@ -1,6 +1,9 @@
 <script setup lang="ts">
 defineProps<{
-  requests: { id: string | number; username: string }[];
+  requests: {
+    id: string | number;
+    username: string;
+  }[];
   acceptRequest: (id: string | number) => Promise<void>;
   rejectRequest: (id: string | number) => Promise<void>;
 }>();

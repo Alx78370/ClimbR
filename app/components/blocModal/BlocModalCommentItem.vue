@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTimeAgo } from "@vueuse/core";
+import { capitalizeFirstLetter } from "~~/utils/capitalize";
 
 const props = defineProps<{
   comment: {
@@ -44,7 +45,8 @@ const handleDelete = () => {
     />
     <div class="flex-1">
       <p class="text-sm font-semibold text-white">
-        {{ comment.first_name }} {{ comment.last_name }}
+        {{ capitalizeFirstLetter(comment.first_name) }}
+        {{ capitalizeFirstLetter(comment.last_name) }}
       </p>
       <p class="mt-1 text-sm text-gray-300">{{ comment.content }}</p>
     </div>
