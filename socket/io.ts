@@ -20,9 +20,8 @@ export const initSocketIO = (server: HTTPServer): Server => {
       console.log(`👤 User ${userId} a rejoint la room user_${userId}`);
     });
 
-    socket.on("likeBloc", ({ blocId }) => {
-      console.log(`💗 Broadcast like pour bloc ${blocId}`);
-      io.emit("likeBloc", { blocId }); // tout le monde reçoit
+    socket.on("likeBloc", ({ blocId, action, userId, userData }) => {
+      io.emit("likeBloc", { blocId, action, userId, userData });
     });
 
     socket.on("newNotification", ({ to, data }) => {
