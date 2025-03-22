@@ -1,6 +1,9 @@
-import type { Friend, FriendRequest, ApiResponse } from "../../types/friend";
+import type { Friend, FriendRequest } from "~~/types/friend";
+import type { NotificationAwareResponse } from "~~/types/api";
 
 export function useFriends() {
+  const { sendNotification } = useNotifications();
+
   const requests = ref<FriendRequest[]>([]);
   const friends = ref<Friend[]>([]);
   const friendshipStatus = ref<Record<number, "none" | "pending" | "accepted">>(
@@ -15,28 +18,39 @@ export function useFriends() {
     return friendshipStatus.value[userId] || "none";
   };
 
-  // Envoyer une demande d'ami
+  // ✅ Envoyer une demande d'ami
   const sendFriendRequest = async (
-    userId: number,
+    currentUserId: number,
     friendUsername: string,
   ): Promise<void> => {
-    if (!userId || !friendUsername) {
-      console.error("Erreur : userId ou friendUsername est manquant", {
-        userId,
-        friendUsername,
-      });
+    if (!currentUserId || !friendUsername) {
       message.value = "Erreur : données manquantes.";
       return;
     }
 
     try {
-      const response = await $fetch<ApiResponse>("/api/friends/request", {
-        method: "POST",
-        body: { userId, friendUsername },
-      });
+      const response = await $fetch<NotificationAwareResponse>(
+        "/api/friends/request",
+        {
+          method: "POST",
+          body: {
+            userId: currentUserId,
+            friendUsername: friendUsername,
+          },
+        },
+      );
+
+      if (response.notify) {
+        sendNotification({
+          receiverId: response.notify.receiverId,
+          type: response.notify.type,
+          message: response.notify.message,
+        });
+      }
 
       message.value = response.message;
-    } catch {
+    } catch (error) {
+      console.error("❌ Erreur lors de l'envoi de la demande d'ami :", error);
       message.value = "Erreur lors de l'envoi de la demande.";
     }
   };
@@ -46,24 +60,42 @@ export function useFriends() {
     try {
       requests.value = await $fetch<FriendRequest[]>("/api/friends/pending");
     } catch (error) {
-      console.error("Erreur lors de la récupération des demandes :", error);
+      console.error("❌ Erreur lors de la récupération des demandes :", error);
     }
   };
 
-  // Accepter une demande d'ami
+  // ✅ Accepter une demande d'ami
   const acceptRequest = async (
     friendshipId: string | number,
   ): Promise<void> => {
     try {
-      await $fetch<ApiResponse>("/api/friends/acceptFriend", {
-        method: "POST",
-        body: { friendshipId: Number(friendshipId) },
-      });
+      const currentUserId = useUserSession().user.value?.id;
+      if (!currentUserId) return;
+
+      const { sendNotification } = useNotifications();
+
+      const response = await $fetch<NotificationAwareResponse>(
+        "/api/friends/acceptFriend",
+        {
+          method: "POST",
+          body: { friendshipId: Number(friendshipId) },
+        },
+      );
+
+      if (response.notify) {
+        sendNotification({
+          receiverId: response.notify.receiverId,
+          type: response.notify.type,
+          message: response.notify.message,
+        });
+      }
 
       message.value = "Ami accepté.";
       requests.value = requests.value.filter(
         (r) => r.id !== Number(friendshipId),
       );
+
+      await fetchFriends(currentUserId);
     } catch {
       message.value = "Erreur lors de l'acceptation.";
     }
@@ -74,7 +106,7 @@ export function useFriends() {
     friendshipId: string | number,
   ): Promise<void> => {
     try {
-      await $fetch<ApiResponse>("/api/friends/rejectFriend", {
+      await $fetch<NotificationAwareResponse>("/api/friends/rejectFriend", {
         method: "POST",
         body: { friendshipId: Number(friendshipId) },
       });

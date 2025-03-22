@@ -1,7 +1,10 @@
 import type { Comment } from "~~/types/comment";
+import type { NotificationAwareResponse } from "~~/types/api";
 
 export const useComment = (blocId: number) => {
   const comments = useState<Comment[]>(`comments-${blocId}`, () => []);
+  const { sendNotification } = useNotifications();
+
   const isLoading = ref(false);
   const errorMessage = ref("");
 
@@ -39,10 +42,21 @@ export const useComment = (blocId: number) => {
     errorMessage.value = "";
 
     try {
-      await $fetch(`/api/blocs/${blocId}/comments`, {
-        method: "POST",
-        body: { content },
-      });
+      const response = await $fetch<NotificationAwareResponse>(
+        `/api/blocs/${blocId}/comments`,
+        {
+          method: "POST",
+          body: { content },
+        },
+      );
+
+      if (response.notify) {
+        sendNotification({
+          receiverId: response.notify.receiverId,
+          type: response.notify.type,
+          message: response.notify.message,
+        });
+      }
 
       await fetchComments();
     } catch (err) {

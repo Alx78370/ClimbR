@@ -3,6 +3,7 @@ import authMiddleware from "../../middleware/auth";
 import ProfileTabs from "~/components/profile/ProfileTabs.vue";
 import FriendRequests from "~/components/friends/FriendRequests.vue";
 import FriendsList from "~/components/friends/FriendsList.vue";
+import { useRoute, useRouter } from "vue-router";
 
 const {
   requests,
@@ -12,9 +13,28 @@ const {
   acceptRequest,
   rejectRequest,
 } = useFriends();
-const { user } = useUserSession();
-const activeTab = ref<"profil" | "requests" | "friends">("profil");
+
+const user = useUserSession().user;
+const route = useRoute();
+const router = useRouter();
+
 const userId = user.value?.id;
+const activeTab = ref<"profil" | "requests" | "friends">(
+  (route.query.tab as "profil" | "requests" | "friends") || "profil",
+);
+
+watch(
+  () => route.query.tab,
+  (newTab) => {
+    if (newTab === "requests" || newTab === "friends" || newTab === "profil") {
+      activeTab.value = newTab;
+    }
+  },
+);
+
+watch(activeTab, (newTab) => {
+  router.replace({ path: "/profile", query: { tab: newTab } });
+});
 
 definePageMeta({
   middleware: [authMiddleware],

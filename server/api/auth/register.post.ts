@@ -1,5 +1,5 @@
 import pool from "../../db";
-import { generateUniqueUsername } from "../../utils/generateUsername";
+import { generateUniqueUsername } from "../../../utils/generateUsername";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
