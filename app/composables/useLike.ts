@@ -7,6 +7,7 @@ export const useLike = (blocId: number) => {
   const likeList = useState<Like[]>(`likeList-${blocId}`, () => []);
   const likePreview = useState<Like[]>(`likePreview-${blocId}`, () => []);
 
+  const socket = useSocket();
   const { user } = useUserSession();
   const { sendNotification } = useNotifications();
 
@@ -81,12 +82,22 @@ export const useLike = (blocId: number) => {
           message: response.notify.message,
         });
       }
+
+      socket.emit("likeBloc", { blocId });
+      console.log("📤 Like envoyé via socket :", blocId);
     } catch (err) {
       console.error("❌ Erreur lors du toggle du like :", err);
       userHasLiked.value = !userHasLiked.value;
       likes.value += userHasLiked.value ? 1 : -1;
     }
   };
+
+  socket.on("likeBloc", ({ blocId: updatedBlocId }) => {
+    if (updatedBlocId === blocId) {
+      console.log("💗 Mise à jour du like reçue en live pour bloc", blocId);
+      fetchLikes();
+    }
+  });
 
   watchEffect(fetchLikes);
 
