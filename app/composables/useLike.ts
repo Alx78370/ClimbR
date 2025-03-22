@@ -1,8 +1,6 @@
 import type { Like, LikeResponse } from "~~/types/like";
 import type { NotificationAwareResponse } from "~~/types/api";
 
-const registeredBlocs = new Set<number>();
-
 export const useLike = (blocId: number) => {
   const likes = useState<number>(`likes-${blocId}`, () => 0);
   const userHasLiked = useState<boolean>(`userHasLiked-${blocId}`, () => false);
@@ -105,43 +103,43 @@ export const useLike = (blocId: number) => {
     }
   };
 
-  if (!registeredBlocs.has(blocId)) {
-    socket.on(
-      "likeBloc",
-      ({ blocId: updatedBlocId, action, userId, userData }) => {
-        if (updatedBlocId !== blocId) return;
+  useSocketEventOnce<{
+    blocId: number;
+    action: "like" | "unlike";
+    userId: number;
+    userData: {
+      user_id: number;
+      username: string;
+      first_name: string;
+      last_name: string;
+      profile_picture?: string;
+    };
+  }>("likeBloc", blocId, ({ action, userId, userData }) => {
+    if (user.value?.id === userId) return;
 
-        if (user.value?.id === userId) return;
+    if (action === "like") {
+      const alreadyPresent = likePreview.value.some(
+        (u) => u.user_id === userId,
+      );
 
-        if (action === "like") {
-          const alreadyPresent = likePreview.value.some(
-            (u) => u.user_id === userId,
-          );
+      if (!alreadyPresent) {
+        likes.value += 1;
+        likePreview.value.unshift(userData);
+        likePreview.value = likePreview.value.slice(0, 3);
+      }
+    }
 
-          if (!alreadyPresent) {
-            likes.value += 1;
-            likePreview.value.unshift(userData);
-            likePreview.value = likePreview.value.slice(0, 3);
-          }
-        }
+    if (action === "unlike") {
+      const wasInPreview = likePreview.value.some((u) => u.user_id === userId);
 
-        if (action === "unlike") {
-          const wasInPreview = likePreview.value.some(
-            (u) => u.user_id === userId,
-          );
-
-          if (wasInPreview) {
-            likes.value = Math.max(0, likes.value - 1);
-            likePreview.value = likePreview.value.filter(
-              (u) => u.user_id !== userId,
-            );
-          }
-        }
-      },
-    );
-
-    registeredBlocs.add(blocId);
-  }
+      if (wasInPreview) {
+        likes.value = Math.max(0, likes.value - 1);
+        likePreview.value = likePreview.value.filter(
+          (u) => u.user_id !== userId,
+        );
+      }
+    }
+  });
 
   watchEffect(fetchLikes);
 
