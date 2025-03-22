@@ -83,7 +83,19 @@ export const useLike = (blocId: number) => {
         });
       }
 
-      socket.emit("likeBloc", { blocId });
+      socket.emit("likeBloc", {
+        blocId,
+        action: wasLiked ? "unlike" : "like",
+        userId: user.value?.id,
+        userData: {
+          user_id: user.value?.id,
+          username: user.value?.username,
+          first_name: user.value?.first_name,
+          last_name: user.value?.last_name,
+          profile_picture: user.value?.profile_picture || "",
+        },
+      });
+
       console.log("📤 Like envoyé via socket :", blocId);
     } catch (err) {
       console.error("❌ Erreur lors du toggle du like :", err);
@@ -92,12 +104,31 @@ export const useLike = (blocId: number) => {
     }
   };
 
-  socket.on("likeBloc", ({ blocId: updatedBlocId }) => {
-    if (updatedBlocId === blocId) {
-      console.log("💗 Mise à jour du like reçue en live pour bloc", blocId);
-      fetchLikes();
-    }
-  });
+  socket.on(
+    "likeBloc",
+    ({ blocId: updatedBlocId, action, userId, userData }) => {
+      if (updatedBlocId !== blocId) return;
+
+      console.log("💗 Live update:", action, "by user", userId);
+
+      if (action === "like") {
+        likes.value += 1;
+
+        if (!likePreview.value.some((u) => u.user_id === userId)) {
+          likePreview.value.unshift(userData);
+          likePreview.value = likePreview.value.slice(0, 3);
+        }
+      }
+
+      if (action === "unlike") {
+        likes.value = Math.max(0, likes.value - 1);
+
+        likePreview.value = likePreview.value.filter(
+          (u) => u.user_id !== userId,
+        );
+      }
+    },
+  );
 
   watchEffect(fetchLikes);
 
