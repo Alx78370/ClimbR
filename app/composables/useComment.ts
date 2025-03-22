@@ -4,6 +4,8 @@ import type { NotificationAwareResponse } from "~~/types/api";
 export const useComment = (blocId: number) => {
   const comments = useState<Comment[]>(`comments-${blocId}`, () => []);
   const { sendNotification } = useNotifications();
+  const { user } = useUserSession();
+  const socket = useSocket();
 
   const isLoading = ref(false);
   const errorMessage = ref("");
@@ -42,13 +44,12 @@ export const useComment = (blocId: number) => {
     errorMessage.value = "";
 
     try {
-      const response = await $fetch<NotificationAwareResponse>(
-        `/api/blocs/${blocId}/comments`,
-        {
-          method: "POST",
-          body: { content },
-        },
-      );
+      const response = await $fetch<
+        NotificationAwareResponse & { comment?: Comment }
+      >(`/api/blocs/${blocId}/comments`, {
+        method: "POST",
+        body: { content },
+      });
 
       if (response.notify) {
         sendNotification({
@@ -58,7 +59,16 @@ export const useComment = (blocId: number) => {
         });
       }
 
-      await fetchComments();
+      if (response.comment) {
+        comments.value.push(response.comment);
+
+        socket.emit("commentBloc", {
+          blocId,
+          comment: response.comment,
+        });
+      } else {
+        console.warn("⚠️ Aucun commentaire retourné par le serveur");
+      }
     } catch (err) {
       errorMessage.value = "Erreur lors de l'envoi du commentaire.";
       console.error("❌ Erreur :", err);
@@ -75,10 +85,38 @@ export const useComment = (blocId: number) => {
       comments.value = comments.value.filter(
         (comment) => comment.id !== commentId,
       );
+
+      if (user.value) {
+        socket.emit("deleteComment", {
+          blocId,
+          commentId,
+        });
+      }
     } catch (err) {
       console.error("❌ Erreur lors de la suppression du commentaire :", err);
     }
   };
+
+  useSocketEventOnce<{
+    blocId: number;
+    comment: Comment;
+  }>("commentBloc", blocId, ({ comment }) => {
+    if (!comment || !comment.content) return;
+
+    // évite les doublons d'injection
+    if (!comments.value.some((c) => c.id === comment.id)) {
+      comments.value.push(comment);
+      console.log("💬 Commentaire injecté en live :", comment);
+    }
+  });
+
+  useSocketEventOnce<{
+    blocId: number;
+    commentId: number;
+  }>("deleteComment", blocId, ({ commentId }) => {
+    comments.value = comments.value.filter((c) => c.id !== commentId);
+    console.log("🗑️ Commentaire supprimé en live :", commentId);
+  });
 
   fetchComments();
 

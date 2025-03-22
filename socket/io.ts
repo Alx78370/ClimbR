@@ -24,6 +24,15 @@ export const initSocketIO = (server: HTTPServer): Server => {
       io.emit("likeBloc", { blocId, action, userId, userData });
     });
 
+    socket.on("commentBloc", ({ blocId, comment }) => {
+      io.emit("commentBloc", { blocId, comment });
+    });
+
+    socket.on("deleteComment", ({ blocId, commentId }) => {
+      console.log(`🗑️ Suppression commentaire ${commentId} sur bloc ${blocId}`);
+      io.emit("deleteComment", { blocId, commentId });
+    });
+
     socket.on("newNotification", ({ to, data }) => {
       console.log(`📢 Reçu newNotification à envoyer à ${to}`);
       io.to(to).emit("newNotification", data);
