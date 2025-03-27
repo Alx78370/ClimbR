@@ -1,8 +1,8 @@
-import { ref } from "vue";
 import type { Bloc } from "../../types/bloc";
 
 export function useBlocs() {
   const blocs = ref<Bloc[]>([]);
+  const socket = useSocket();
   const isLoading = ref(true);
 
   async function fetchBlocs() {
@@ -40,6 +40,7 @@ export function useBlocs() {
 
       if (response.success) {
         blocs.value = blocs.value.filter((bloc) => bloc.id !== id);
+        socket.emit("deleteBloc", { blocId: id });
         return true;
       } else {
         alert(`Erreur lors de la suppression : ${response.message}`);
@@ -51,6 +52,27 @@ export function useBlocs() {
       return false;
     }
   }
+
+  useSocketEvent<Bloc>(
+    "newBloc",
+    {
+      key: "global",
+    },
+    (bloc: Bloc) => {
+      if (!blocs.value.some((b) => b.id === bloc.id)) {
+        blocs.value.unshift(bloc);
+        console.log("🧱 Bloc reçu en live :", bloc);
+      }
+    },
+  );
+
+  useSocketEvent<{ blocId: number }>(
+    "deleteBloc",
+    { key: "blocs" },
+    ({ blocId }) => {
+      blocs.value = blocs.value.filter((b) => b.id !== blocId);
+    },
+  );
 
   return {
     blocs,

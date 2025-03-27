@@ -37,15 +37,12 @@ export default defineEventHandler(async (event) => {
     const client = await pool.connect();
     try {
       // ➕ Création du bloc
-      const { rows } = await client.query(
+      const insertResult = await client.query(
         `
-        INSERT INTO bloc (salle_id, essai, couleur, media, description, date_validation, type, titre, created_at, updated_at, user_id)
-        VALUES ($1, $2, $3, $4, $5, $6::TIMESTAMP, $7, $8, NOW(), NOW(), $9)
-        RETURNING id, salle_id, essai, couleur, media, description, type, titre,
-                  TO_CHAR(date_validation AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS date_validation,
-                  TO_CHAR(created_at, 'DD/MM/YYYY') AS created_at,
-                  TO_CHAR(updated_at, 'DD/MM/YYYY') AS updated_at;
-        `,
+  INSERT INTO bloc (salle_id, essai, couleur, media, description, date_validation, type, titre, created_at, updated_at, user_id)
+  VALUES ($1, $2, $3, $4, $5, $6::TIMESTAMP, $7, $8, NOW(), NOW(), $9)
+  RETURNING id;
+  `,
         [
           salle_id,
           essai,
@@ -59,7 +56,27 @@ export default defineEventHandler(async (event) => {
         ],
       );
 
-      const createdBloc = rows[0] as Bloc;
+      const insertedBlocId = insertResult.rows[0].id;
+
+      // 🔍 Bloc enrichi avec infos utilisateur + salle
+      const { rows: enrichedRows } = await client.query(
+        `
+  SELECT 
+    b.id, b.salle_id, b.user_id, b.essai, b.couleur, b.media, b.description, b.type, b.titre,
+    TO_CHAR(b.date_validation AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS date_validation,
+    TO_CHAR(b.created_at, 'DD/MM/YYYY') AS created_at,
+    TO_CHAR(b.updated_at, 'DD/MM/YYYY') AS updated_at,
+    u.first_name, u.last_name, u.profile_picture,
+    s.name AS salle_name
+  FROM bloc b
+  JOIN users u ON u.id = b.user_id
+  JOIN salle s ON s.id = b.salle_id
+  WHERE b.id = $1;
+  `,
+        [insertedBlocId],
+      );
+
+      const createdBloc = enrichedRows[0] as Bloc;
 
       // 👥 Récupérer tous les amis de l'utilisateur
       const { rows: friends } = await client.query(

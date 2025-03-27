@@ -97,26 +97,39 @@ export const useComment = (blocId: number) => {
     }
   };
 
-  useSocketEventOnce<{
+  useSocketEvent<{
     blocId: number;
     comment: Comment;
-  }>("commentBloc", blocId, ({ comment }) => {
-    if (!comment || !comment.content) return;
+  }>(
+    "commentBloc",
+    {
+      key: `bloc-${blocId}-comment`,
+      filterProp: "blocId",
+      filterValue: blocId,
+    },
+    ({ comment }) => {
+      if (!comment || !comment.content) return;
 
-    // évite les doublons d'injection
-    if (!comments.value.some((c) => c.id === comment.id)) {
-      comments.value.push(comment);
-      console.log("💬 Commentaire injecté en live :", comment);
-    }
-  });
+      if (!comments.value.some((c) => c.id === comment.id)) {
+        comments.value.push(comment);
+      }
+    },
+  );
 
-  useSocketEventOnce<{
+  useSocketEvent<{
     blocId: number;
     commentId: number;
-  }>("deleteComment", blocId, ({ commentId }) => {
-    comments.value = comments.value.filter((c) => c.id !== commentId);
-    console.log("🗑️ Commentaire supprimé en live :", commentId);
-  });
+  }>(
+    "deleteComment",
+    {
+      key: `bloc-${blocId}-deleteComment`,
+      filterProp: "blocId",
+      filterValue: blocId,
+    },
+    ({ commentId }) => {
+      comments.value = comments.value.filter((c) => c.id !== commentId);
+    },
+  );
 
   fetchComments();
 

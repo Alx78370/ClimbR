@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { capitalizeFirstLetter } from "~~/utils/capitalize";
+
 const props = defineProps<{
   bloc: {
     id: number;
@@ -14,10 +16,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: "delete", id: number): void;
 }>();
-
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
 
 const handleDelete = () => {
   emit("delete", props.bloc.id);
@@ -36,7 +34,8 @@ const handleDelete = () => {
       <Icon v-else name="lucide:circle-user-round" class="text-5xl" />
       <div>
         <p class="font-semibold">
-          {{ capitalize(bloc.first_name) }} {{ capitalize(bloc.last_name) }}
+          {{ capitalizeFirstLetter(bloc.first_name) }}
+          {{ capitalizeFirstLetter(bloc.last_name) }}
         </p>
         <p class="mb-5 text-sm text-gray-300">
           Validé le {{ bloc.date_validation }} - {{ bloc.salle_name }}

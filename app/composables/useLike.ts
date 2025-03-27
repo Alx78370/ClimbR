@@ -103,43 +103,47 @@ export const useLike = (blocId: number) => {
     }
   };
 
-  useSocketEventOnce<{
+  useSocketEvent<{
     blocId: number;
     action: "like" | "unlike";
     userId: number;
-    userData: {
-      user_id: number;
-      username: string;
-      first_name: string;
-      last_name: string;
-      profile_picture?: string;
-    };
-  }>("likeBloc", blocId, ({ action, userId, userData }) => {
-    if (user.value?.id === userId) return;
+    userData: Like;
+  }>(
+    "likeBloc",
+    {
+      key: `bloc-${blocId}-like`,
+      filterProp: "blocId",
+      filterValue: blocId,
+    },
+    ({ action, userId, userData }) => {
+      if (user.value?.id === userId) return;
 
-    if (action === "like") {
-      const alreadyPresent = likePreview.value.some(
-        (u) => u.user_id === userId,
-      );
-
-      if (!alreadyPresent) {
-        likes.value += 1;
-        likePreview.value.unshift(userData);
-        likePreview.value = likePreview.value.slice(0, 3);
-      }
-    }
-
-    if (action === "unlike") {
-      const wasInPreview = likePreview.value.some((u) => u.user_id === userId);
-
-      if (wasInPreview) {
-        likes.value = Math.max(0, likes.value - 1);
-        likePreview.value = likePreview.value.filter(
-          (u) => u.user_id !== userId,
+      if (action === "like") {
+        const alreadyPresent = likePreview.value.some(
+          (u) => u.user_id === userId,
         );
+
+        if (!alreadyPresent) {
+          likes.value += 1;
+          likePreview.value.unshift(userData);
+          likePreview.value = likePreview.value.slice(0, 3);
+        }
       }
-    }
-  });
+
+      if (action === "unlike") {
+        const wasInPreview = likePreview.value.some(
+          (u) => u.user_id === userId,
+        );
+
+        if (wasInPreview) {
+          likes.value = Math.max(0, likes.value - 1);
+          likePreview.value = likePreview.value.filter(
+            (u) => u.user_id !== userId,
+          );
+        }
+      }
+    },
+  );
 
   watchEffect(fetchLikes);
 
