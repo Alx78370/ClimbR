@@ -27,6 +27,7 @@ const isCommenting = ref(false);
 const { comments, deleteComment } = useComment(props.bloc.id);
 const { likes } = useLike(props.bloc.id);
 
+const blocOwnerId = computed(() => props.bloc.user_id ?? 0);
 const commentCount = computed(() => comments.value.length);
 const likeCount = computed(() => likes.value);
 
@@ -76,7 +77,7 @@ const handleCommentSubmit = (comment: string) => {
     <CardBlocFooter
       :bloc-id="bloc.id"
       :bloc-title="bloc.titre"
-      :bloc-owner-id="bloc.user_id"
+      :bloc-owner-id="blocOwnerId"
       :comment-count="commentCount"
       :like-count="likeCount"
       :is-commenting="isCommenting"
@@ -85,14 +86,14 @@ const handleCommentSubmit = (comment: string) => {
 
     <CommentSection
       :comments="comments"
-      :bloc-owner-id="bloc.user_id"
+      :bloc-owner-id="blocOwnerId"
       :delete-comment="deleteComment"
     />
 
     <CommentDisplay
       :bloc-id="bloc.id"
       :bloc-title="bloc.titre"
-      :bloc-owner-id="bloc.user_id"
+      :bloc-owner-id="blocOwnerId"
       :comment-count="commentCount"
       :min-comments="3"
     >

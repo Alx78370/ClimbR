@@ -7,6 +7,7 @@ export const useLike = (blocId: number) => {
   const likeList = useState<Like[]>(`likeList-${blocId}`, () => []);
   const likePreview = useState<Like[]>(`likePreview-${blocId}`, () => []);
 
+  const socket = useSocket();
   const { user } = useUserSession();
   const { sendNotification } = useNotifications();
 
@@ -50,28 +51,35 @@ export const useLike = (blocId: number) => {
       userHasLiked.value = !wasLiked;
       likes.value += wasLiked ? -1 : 1;
 
+      if (!user.value) return;
+
+      const { id, username, first_name, last_name, profile_picture } =
+        user.value;
+      const userData = {
+        user_id: id,
+        username,
+        first_name,
+        last_name,
+        profile_picture: profile_picture || "",
+      };
+
       if (!wasLiked) {
-        if (user.value) {
-          likeList.value.push({
-            user_id: user.value.id,
-            username: user.value.username,
-            first_name: user.value.first_name,
-            last_name: user.value.last_name,
-            profile_picture: user.value.profile_picture || "",
-          });
-        }
+        likeList.value.push(userData);
         likeList.value = likeList.value.slice(-3);
+
+        // ✅ Ajout direct dans likePreview pour l’utilisateur
+        if (!likePreview.value.some((u) => u.user_id === userData.user_id)) {
+          likePreview.value.unshift(userData);
+          likePreview.value = likePreview.value.slice(0, 3);
+        }
       } else {
-        likeList.value = likeList.value.filter(
-          (u) => u.user_id !== user.value?.id,
-        );
+        likeList.value = likeList.value.filter((u) => u.user_id !== id);
+        likePreview.value = likePreview.value.filter((u) => u.user_id !== id);
       }
 
       const response = await $fetch<NotificationAwareResponse>(
         `${likeApiUrl.value}/toggle`,
-        {
-          method: "POST",
-        },
+        { method: "POST" },
       );
 
       if (response.notify) {
@@ -81,12 +89,61 @@ export const useLike = (blocId: number) => {
           message: response.notify.message,
         });
       }
+
+      socket.emit("likeBloc", {
+        blocId,
+        action: wasLiked ? "unlike" : "like",
+        userId: id,
+        userData,
+      });
     } catch (err) {
       console.error("❌ Erreur lors du toggle du like :", err);
       userHasLiked.value = !userHasLiked.value;
       likes.value += userHasLiked.value ? 1 : -1;
     }
   };
+
+  useSocketEvent<{
+    blocId: number;
+    action: "like" | "unlike";
+    userId: number;
+    userData: Like;
+  }>(
+    "likeBloc",
+    {
+      key: `bloc-${blocId}-like`,
+      filterProp: "blocId",
+      filterValue: blocId,
+    },
+    ({ action, userId, userData }) => {
+      if (user.value?.id === userId) return;
+
+      if (action === "like") {
+        const alreadyPresent = likePreview.value.some(
+          (u) => u.user_id === userId,
+        );
+
+        if (!alreadyPresent) {
+          likes.value += 1;
+          likePreview.value.unshift(userData);
+          likePreview.value = likePreview.value.slice(0, 3);
+        }
+      }
+
+      if (action === "unlike") {
+        const wasInPreview = likePreview.value.some(
+          (u) => u.user_id === userId,
+        );
+
+        if (wasInPreview) {
+          likes.value = Math.max(0, likes.value - 1);
+          likePreview.value = likePreview.value.filter(
+            (u) => u.user_id !== userId,
+          );
+        }
+      }
+    },
+  );
 
   watchEffect(fetchLikes);
 

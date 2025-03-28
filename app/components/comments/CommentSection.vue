@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTimeAgo } from "@vueuse/core";
-import { capitalize } from "vue";
+import { capitalizeFirstLetter } from "~~/utils/capitalize";
 
 const props = defineProps<{
   comments: {
@@ -51,8 +51,8 @@ const formattedComments = computed(() =>
       <div class="group flex-1">
         <div class="flex justify-between">
           <p class="text-sm font-semibold">
-            {{ capitalize(comment.first_name) }}
-            {{ capitalize(comment.last_name) }}
+            {{ capitalizeFirstLetter(comment.first_name) }}
+            {{ capitalizeFirstLetter(comment.last_name) }}
           </p>
           <div class="flex items-center gap-2">
             <p class="text-xs text-gray-400">

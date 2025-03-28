@@ -2,9 +2,12 @@ import { useRouter } from "vue-router";
 import { useFileUpload } from "./useFileUpload";
 import type { Bloc } from "../../types/bloc";
 import type { MultiNotificationAwareResponse } from "~~/types/api";
+import useSocket from "./useSocket";
 
 export function useBlocForm(blocRef: Ref<Bloc | null>) {
   const router = useRouter();
+  const socket = useSocket();
+
   const salleId = ref<number | null>(null);
   const essai = ref<"Flash" | "2-5" | "6-9" | "10+">("Flash");
   const type = ref<
@@ -24,7 +27,6 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
   const mediaFile = ref<File | null>(null);
   const selectedFileName = ref<string>("");
   const { mediaFileName } = useFileUpload();
-
   const { sendNotification } = useNotifications();
 
   watch(
@@ -53,6 +55,7 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
     try {
       let uploadedFileName = mediaFileName.value;
       let blocId: number | null = blocRef.value ? blocRef.value.id : null;
+      let notifyList: MultiNotificationAwareResponse["notify"] = [];
 
       const blocData = {
         salle_id: salleId.value,
@@ -83,22 +86,10 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
           },
         );
 
-        if (!response || !response.bloc || !response.bloc.id) {
-          return;
-        }
+        if (!response?.bloc?.id) return;
 
         blocId = response.bloc.id;
-
-        // ✅ Envoi des notifications en temps réel à tous les amis
-        if (Array.isArray(response.notify)) {
-          for (const n of response.notify) {
-            sendNotification({
-              receiverId: n.receiverId,
-              type: n.type,
-              message: n.message,
-            });
-          }
-        }
+        notifyList = response.notify;
       }
 
       if (mediaFile.value && blocId) {
@@ -121,6 +112,23 @@ export function useBlocForm(blocRef: Ref<Bloc | null>) {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: { media: uploadedFileName },
+          });
+        }
+      }
+
+      const finalBloc = await $fetch<Bloc>(`/api/blocs/${blocId}`);
+
+      if (Array.isArray(notifyList)) {
+        for (const n of notifyList) {
+          sendNotification({
+            receiverId: n.receiverId,
+            type: n.type,
+            message: n.message,
+          });
+
+          socket.emit("newBloc", {
+            to: `user_${n.receiverId}`,
+            bloc: finalBloc,
           });
         }
       }

@@ -28,7 +28,7 @@ export default defineEventHandler(async (event): Promise<Bloc[]> => {
         UNION
         SELECT user_id FROM friendships WHERE friend_id = $1 AND status = 'accepted'
       )
-      ORDER BY b.date_validation DESC;
+      ORDER BY b.created_at DESC;
       `,
       [userId],
     );

@@ -18,10 +18,27 @@ export default defineEventHandler(async (event) => {
     const client = await pool.connect();
     try {
       // ✅ Ajouter le commentaire
-      await client.query(
-        `INSERT INTO comments (user_id, bloc_id, content) VALUES ($1, $2, $3);`,
+      const insertResult = await client.query(
+        `INSERT INTO comments (user_id, bloc_id, content)
+         VALUES ($1, $2, $3)
+         RETURNING id, content, created_at;`,
         [userId, blocId, body.content],
       );
+
+      const insertedComment = insertResult.rows[0];
+
+      // ✅ Récupérer les infos utilisateur
+      const { rows: userRows } = await client.query(
+        `SELECT first_name, last_name, profile_picture FROM users WHERE id = $1;`,
+        [userId],
+      );
+
+      if (userRows.length === 0) {
+        console.error("❌ Utilisateur introuvable, notification annulée.");
+        return { message: "Utilisateur introuvable" };
+      }
+
+      const { first_name, last_name, profile_picture } = userRows[0];
 
       // ✅ Récupérer le propriétaire du bloc
       const { rows: blocRows } = await client.query(
@@ -36,19 +53,6 @@ export default defineEventHandler(async (event) => {
 
       const blocOwnerId = blocRows[0].user_id;
 
-      // ✅ Récupérer le prénom et nom de l'utilisateur qui commente
-      const { rows: userRows } = await client.query(
-        `SELECT first_name, last_name FROM users WHERE id = $1;`,
-        [userId],
-      );
-
-      if (userRows.length === 0) {
-        console.error("❌ Utilisateur introuvable, notification annulée.");
-        return { message: "Utilisateur introuvable" };
-      }
-
-      const firstName = userRows[0].first_name;
-      const lastName = userRows[0].last_name;
       const truncatedContent =
         body.content.length > 30
           ? body.content.substring(0, 30) + "..."
@@ -57,28 +61,35 @@ export default defineEventHandler(async (event) => {
       let notify = null;
 
       if (userId !== blocOwnerId) {
-        // ✅ Crée la notification (en BDD)
         await $fetch<NotificationAwareResponse>("/api/notifications/create", {
           method: "POST",
           body: {
             receiverId: blocOwnerId,
             senderId: userId,
             type: "comment",
-            message: `${firstName} ${lastName} a commenté votre bloc : "${truncatedContent}".`,
+            message: `${first_name} ${last_name} a commenté votre bloc : "${truncatedContent}".`,
           },
         });
 
-        // ✅ Retourne les infos pour que le client puisse faire le socket.emit()
         notify = {
           receiverId: blocOwnerId,
           type: "comment",
-          message: `${firstName} ${lastName} a commenté votre bloc : "${truncatedContent}".`,
+          message: `${first_name} ${last_name} a commenté votre bloc : "${truncatedContent}".`,
         };
       }
 
       return {
         message: "Commentaire ajouté !",
         notify,
+        comment: {
+          id: insertedComment.id,
+          content: insertedComment.content,
+          created_at: insertedComment.created_at,
+          user_id: userId,
+          first_name,
+          last_name,
+          profile_picture,
+        },
       };
     } finally {
       client.release();
